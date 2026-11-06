@@ -5,8 +5,19 @@
 插件 ID 与导入路径仍为 `aiko-scan-pro`，既有 API 名称保持兼容。更新演示页时请保留实际权限、错误与能力诊断；不把未授权或未实现能力视为成功。
 <!-- NEXUS:BRAND:END -->
 
+<!-- NEXUS:WAVE10:VERIFICATION:START -->
+## 本轮验收记录（2026-11-06）
 
-> **本轮功能验收边界（2026-11-05）**：Android 现在提供实际的标准模式 `native-view` 组件文件，替代原先只有注释的组件占位；全屏/相册/事件与查询桥接也已补齐。已通过 Android 14 生成二维码图片→生产MLKit识别、Native事件/诊断测试，标准组件整工程编译已通过；现场相机、多码UI点选、权限和页面进出仍未验收。该标准模式组件只支持 **uni-app x Android**，不支持普通 uni-app 的 vue/nvue；iOS 组件/相册 UTS 回调桥未完成时返回明确错误。下方功能介绍不代表各平台均已验收。`nearFocusLock` 当前为保留字段，不应依赖它锁定硬件焦距；可用 `zoomRatio` 与 `focusAt`，实际近距效果需设备验证。
+本插件属于本轮2款新增、8款升级的交付。整批10项在同一台Android 14手机的两个实际测试宿主中完成Native专项：数据38条、工业扫码/标签28条、文档图像15条、媒体26条，合计107条；公开UTS新增链路另有30条回归通过。**这些是整批不同层次的检查数，不是本插件107个功能，也不能相加称为137个独立功能。** 本插件只对应其中相关检查，测试不替代全功能、全机型或长期稳定性验收。
+
+新增能力以Android uni-app x为本轮验证范围；普通uni-app及旧平台支持见各API说明。iOS/Harmony/Web不因本轮Android测试获得新增支持声明。实体PDA、DPM工件、BLE外设与纸张输出、完整Office排版、系统选择器所有跨UID/授权回收路径均不在本轮通过范围内。
+
+本轮新增截图为数据库、文件工作流和工业扫码业务页的真实whole-page页面快照，已人工查看；它们不含系统栏，也不证明相机现场ROI或其他插件所有按钮均已人工验收。
+<!-- NEXUS:WAVE10:VERIFICATION:END -->
+
+
+
+> **本轮功能验收边界（2026-11-05）**：Android 现在提供实际的标准模式 `native-view` 组件文件，替代原先只有注释的组件占位；全屏/相册/事件与查询桥接也已补齐。已通过 Android 14 生成二维码图片→生产MLKit识别、Native事件/诊断测试，标准组件整工程编译已通过；现场实物识码、多码UI点选与不同授权流程仍未验收；本轮CameraX启停/恢复生命周期另有4条实测，见验收记录。该标准模式组件只支持 **uni-app x Android**，不支持普通 uni-app 的 vue/nvue；iOS 组件/相册 UTS 回调桥未完成时返回明确错误。下方功能介绍不代表各平台均已验收。`nearFocusLock` 当前为保留字段，不应依赖它锁定硬件焦距；可用 `zoomRatio` 与 `focusAt`，实际近距效果需设备验证。
 
 <!-- AIKO:RELEASE-NOTES:START -->
 ## 当前版本与授权价格
@@ -840,3 +851,11 @@ Scan.createScanOrder(options)
 依据：[ML Kit Android](https://developers.google.com/ml-kit/vision/barcode-scanning/android)、[CameraX变换](https://developer.android.com/media/camera/camerax/transform-output)、[GS1 AI定义](https://ref.gs1.org/ai/)。
 
 嵌入式组件已挂载时，`startScan`对同ID路由到现有视图而不是另开全屏；推荐使用组件ref公开start方法，或保持API与props配置完全一致。1.2.0的pause会释放相机，resume用保留的弱引用LifecycleOwner重新绑定。
+
+本轮工业函数、真实ROI与业务页仅Android实现；原有扫码iOS元数据声明沿用，不代表本轮工业能力或Android标准native-view组件已支持iOS。本轮未进行iOS编译/真机验收。
+
+<!-- NEXUS:SCAN:LIFECYCLE:START -->
+### Android相机生命周期专项（2026-11-06）
+
+在同一台Android14手机实测4条通过：首次/恢复时CameraX均达到OPEN与STREAMING且本视图2个UseCase已绑定；暂停/停止时旧UseCase全部解绑、分析executor已shutdown并清理引用、相机达到CLOSED；恢复绑定新一代UseCase。QA未拍照、未存帧、未记录识别码值。**这4条只验证实际相机生命周期，不表示实体纸码/ROI现场识别、多码点选、PDA或DPM已验收。**
+<!-- NEXUS:SCAN:LIFECYCLE:END -->

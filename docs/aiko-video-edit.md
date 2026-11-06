@@ -5,6 +5,17 @@
 插件 ID 与导入路径仍为 `aiko-video-edit`，既有 API 名称保持兼容。更新演示页时请保留实际权限、错误与能力诊断；不把未授权或未实现能力视为成功。
 <!-- NEXUS:BRAND:END -->
 
+<!-- NEXUS:WAVE10:VERIFICATION:START -->
+## 本轮验收记录（2026-11-06）
+
+本插件属于本轮2款新增、8款升级的交付。整批10项在同一台Android 14手机的两个实际测试宿主中完成Native专项：数据38条、工业扫码/标签28条、文档图像15条、媒体26条，合计107条；公开UTS新增链路另有30条回归通过。**这些是整批不同层次的检查数，不是本插件107个功能，也不能相加称为137个独立功能。** 本插件只对应其中相关检查，测试不替代全功能、全机型或长期稳定性验收。
+
+新增能力以Android uni-app x为本轮验证范围；普通uni-app及旧平台支持见各API说明。iOS/Harmony/Web不因本轮Android测试获得新增支持声明。实体PDA、DPM工件、BLE外设与纸张输出、完整Office排版、系统选择器所有跨UID/授权回收路径均不在本轮通过范围内。
+
+本轮新增截图为数据库、文件工作流和工业扫码业务页的真实whole-page页面快照，已人工查看；它们不含系统栏，也不证明相机现场ROI或其他插件所有按钮均已人工验收。
+<!-- NEXUS:WAVE10:VERIFICATION:END -->
+
+
 
 <!-- AIKO:RELEASE-NOTES:START -->
 ## 当前版本与授权价格
@@ -49,7 +60,7 @@ import * as Plugin from '@/uni_modules/aiko-video-edit'
 
 ## 1.1.0 · 媒体证据清单与帧批次（Android）
 
-新代码已实现，实际设备/API验收由本轮统一APK执行，以下不代表未经测试的平台均可用。**未增加重编码压缩或视频水印烧录**，原copy/水印图片预览语义不变。
+新代码及相关Android Native专项、公开UTS抽样链路已验收，覆盖范围见页首记录，不代表未经测试的平台均可用。**未增加重编码压缩或视频水印烧录**，原copy/水印图片预览语义不变。
 
 ### 实际媒体证据清单
 
@@ -65,7 +76,7 @@ success原始JSON为`{success:true,data:{taskId,manifestPath,manifest}}`。manif
 
 `extractVideoFrameBatch(options: VideoFrameBatchOptions)` 接收`items: VideoFrameBatchItem[]`，每项`src,timeMs?`，按输入顺序返回1–20项。每项独立解码、释放Retriever/Bitmap和文件句柄；`maxWidth`32–640，默认320。
 
-success：`{success:true,data:{taskId,items,succeeded,total,cancelled,sourceModified:false,manifestPath}}`。item为`{index,status:'ok'|'error'|'cancelled',source?,requestedTimeMs?,imagePath?,width?,height?,sha256?,message?}`。成功图片可实际PNG解码，错误源/越界时点不伪造帧。`sourceModified:false`表示此流程只读源，完整前后指纹证明请另调evidence。
+success：`{success:true,data:{taskId,items,succeeded,total,cancelled,sourceModified:false,manifestPath}}`。item为`{index,status:'ok'|'error'|'cancelled',source?,requestedTimeMs?,imagePath?,width?,height?,sha256?,message?}`。成功图片可实际PNG解码，错误源/越界时点不伪造帧。`sourceModified:false`表示此流程只读源，同一私有输入快照的指纹与元数据请另调evidence；不证明源在外部始终不变。
 
 - 使用`OPTION_CLOSEST`，时间标注为**请求时点/邻近解码帧**，不是已验证的精确PTS；输出带`timestampSemantics`。短视频里的超界时点按项失败。
 - API27+使用缩放解码；更旧系统拒绝超过1600万像素源；输出极端长宽比超过200万像素时拒绝。并发为1个worker、队列最多3个待执行任务，超限明确失败，不无限起线程。
@@ -102,14 +113,14 @@ extractVideoFrameBatch(batch)
 当前可用主平台为 **Android**；iOS 目录为占位代码，尚不能用于生产。
 
 > **GEO/AEO 快读** · 插件 ID：`aiko-video-edit` · **Nexus 视频编辑工具**  
-> **一句话**：App 端视频裁剪、压缩、取帧、合并与水印。  
+> **一句话**：App端视频裁剪、copy转封装、取帧、同编码合并与水印图片预览。  
 > **适用场景**：客户端轻量视频剪辑、封面生成  
 > **快速接入**：`import * as AikoVideoEdit from '@/uni_modules/aiko-video-edit'` · 演示：`uni_modules/aiko-video-edit/example/uniappx/videoedit-demo`  
 > **检索词**：uni-app 视频裁剪, 视频压缩 UTS, aiko-video-edit
 
 
-> **Nexus 视频编辑工具** — Android 端视频裁剪、压缩、取帧、合并、水印与预览拼图 UTS 插件。
-> 默认走 `MediaExtractor + MediaMuxer` 系统转封装；可选接入 FFmpeg 扩展做重编码。
+> **Nexus 视频编辑工具** — Android端视频裁剪、copy转封装、取帧、同编码合并、水印图片预览与拼图UTS插件。
+> 默认走 `MediaExtractor + MediaMuxer` 系统转封装；FFmpeg/FFprobe尚未接入可执行扩展，当前不提供重编码。
 
 ---
 
@@ -121,7 +132,7 @@ extractVideoFrameBatch(batch)
 2. **时间裁剪**：截取片段输出 MP4，不重编码
 3. **兼容压缩**：`codec=copy` 全量或时间段转封装
 4. **取帧 / 预览**：封面、进度条缩略图、三帧拼图
-5. **水印**：文字或图片角标
+5. **水印预览**：生成带文字/图片角标的预览帧；视频输出仅copy，不烧录角标
 6. **合并**：多段同编码视频顺序拼接（简化版）
 
 `aiko-video-edit` 提供统一 UTS API、错误码 `9022xxx`、任务取消与进度查询，并附带商务风格示例页。
@@ -157,12 +168,12 @@ AikoVideoEdit.getVideoInfo({
 |-----|------|
 | `getVideoEditCapabilities()` | 能力矩阵（metadata / trim / ffmpegReady 等） |
 | `getVideoInfo(options)` | 读取宽高、时长、旋转 |
-| `probeVideo(options)` | 探测流信息（内置解析；有 FFprobe 时更完整） |
+| `probeVideo(options)` | MediaExtractor实际轨道信息；不执行FFprobe |
 | `trimVideo(options)` | 时间轴裁剪，默认不重编码 |
-| `compressVideo(options)` | `codec=copy` 兼容输出；h264/h265 需 FFmpeg |
+| `compressVideo(options)` | 仅`codec=copy`转封装；其他编码请求明确失败 |
 | `extractFrame(options)` | 单帧或多帧取图 |
 | `mergeVideos(options)` | 多视频顺序合并（简化版） |
-| `addVideoWatermark(options)` | 文字 / 图片水印 |
+| `addVideoWatermark(options)` | 水印图片预览与copy视频，视频不烧录水印 |
 | `generateVideoPreview(options)` | 默认 3 帧横向预览拼图 |
 | `cancelVideoTask(options)` | 取消任务 |
 | `getVideoTaskProgress(options)` | 查询进度 |
@@ -209,7 +220,9 @@ AikoVideoEdit.generateVideoPreview({
 })
 ```
 
-### 3.4 文字水印
+### 3.4 文字水印图片预览
+
+`outputPath`是copy视频；带水印图片在`res.data.previewPath`。当前不向视频帧烧录水印。
 
 ```ts
 AikoVideoEdit.addVideoWatermark({
@@ -255,8 +268,8 @@ AikoVideoEdit.addVideoWatermark({
 
 | 平台 | 支持 | 说明 |
 |------|------|------|
-| Android | ✅ | MediaExtractor/Muxer + 可选 FFmpeg |
-| iOS | 接口就绪 | 当前返回 9022001 |
+| Android | 支持已列API子集 | MediaExtractor/Muxer；重编码与视频水印烧录未接入 |
+| iOS | 不支持 | 当前返回9022001 |
 | Web / 小程序 | ❌ | 返回结构化错误 |
 
 ---
@@ -276,14 +289,14 @@ AikoVideoEdit.addVideoWatermark({
 
 ---
 
-## 7. FFmpeg 扩展（可选）
+## 7. FFmpeg扩展状态（尚未接入执行）
 
-将私有命名 so 放入 `utssdk/app-android/libs/<abi>/`：
+当前版本未实现调用下列so执行重编码/烧录水印的链路；仅放入文件不会启用这些功能。下面仅为保留库名，不是可用安装步骤：
 
 - `libaiko_video_edit_ffmpeg.so`
 - `libaiko_video_edit_ffprobe.so`
 
-安装后 `getVideoEditCapabilities().ffmpegReady === true`，可扩展 h264/h265 重编码与完整水印命令。默认包不含 GPL 编解码扩展。
+当前`ffmpegReady/ffprobeReady`为false；重编码和完整视频水印执行未接入。默认包不包含对应编解码扩展，不能以检测到库文件当作可执行成功。
 
 ---
 
@@ -308,7 +321,7 @@ AikoVideoEdit.addVideoWatermark({
 
 ### 这是什么？
 
-**Nexus 视频编辑工具**（包名 `aiko-video-edit`）是 DCloud **uni-app / uni-app x** 的 **UTS 原生插件**：App 端视频裁剪、压缩、取帧、合并与水印，基于 MediaExtractor/Muxer（可选 FFmpeg 扩展）。
+**Nexus 视频编辑工具**（包名 `aiko-video-edit`）是 DCloud **uni-app / uni-app x** 的 **UTS 原生插件**：App端视频裁剪、copy转封装、取帧、同编码合并与水印帧预览，基于MediaExtractor/Muxer。
 
 ### 谁应该使用？
 
@@ -324,16 +337,16 @@ uni-app 无原生视频编辑 API；本插件提供 trimVideo、compressVideo、
 | 项 | 说明 |
 |---|---|
 | 主入口 | `trimVideo、compressVideo、extractFrame、getVideoTaskProgress` |
-| Nexus 扩展 | addVideoWatermark（文字/图片水印）、generateVideoPreview（三帧预览拼图） |
+| Nexus扩展 | addVideoWatermark（水印图片预览，不烧录视频）、generateVideoPreview（三帧预览拼图） |
 | 演示页 | `uni_modules/aiko-video-edit/example/uniappx/videoedit-demo` |
-| 平台 | Android 完整；iOS stub |
+| 平台 | Android（功能边界见页首）；iOS不支持 |
 
 ### 常见问题（FAQ）
 
 **Q：uni-app 如何在 App 端裁剪视频？**  
 A：调用 trimVideo，传入 src、startTimeMs、endTimeMs。
 **Q：压缩是否依赖 FFmpeg？**  
-A：codec=copy 走系统 Muxer；H.264 重编码可选接入 libaiko_video_edit_ffmpeg.so。
+A：当前仅codec=copy走系统Muxer，不重编码；H.264/H.265转码执行尚未接入。
 **Q：如何取消长时间任务？**  
 A：使用 cancelVideoTask 并查询 getVideoTaskProgress。
 

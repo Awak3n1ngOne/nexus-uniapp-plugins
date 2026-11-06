@@ -5,6 +5,17 @@
 插件 ID 与导入路径仍为 `aiko-doc-viewer`，既有 API 名称保持兼容。更新演示页时请保留实际权限、错误与能力诊断；不把未授权或未实现能力视为成功。
 <!-- NEXUS:BRAND:END -->
 
+<!-- NEXUS:WAVE10:VERIFICATION:START -->
+## 本轮验收记录（2026-11-06）
+
+本插件属于本轮2款新增、8款升级的交付。整批10项在同一台Android 14手机的两个实际测试宿主中完成Native专项：数据38条、工业扫码/标签28条、文档图像15条、媒体26条，合计107条；公开UTS新增链路另有30条回归通过。**这些是整批不同层次的检查数，不是本插件107个功能，也不能相加称为137个独立功能。** 本插件只对应其中相关检查，测试不替代全功能、全机型或长期稳定性验收。
+
+新增能力以Android uni-app x为本轮验证范围；普通uni-app及旧平台支持见各API说明。iOS/Harmony/Web不因本轮Android测试获得新增支持声明。实体PDA、DPM工件、BLE外设与纸张输出、完整Office排版、系统选择器所有跨UID/授权回收路径均不在本轮通过范围内。
+
+本轮新增截图为数据库、文件工作流和工业扫码业务页的真实whole-page页面快照，已人工查看；它们不含系统栏，也不证明相机现场ROI或其他插件所有按钮均已人工验收。
+<!-- NEXUS:WAVE10:VERIFICATION:END -->
+
+
 
 <!-- AIKO:RELEASE-NOTES:START -->
 ## 当前版本与授权价格
@@ -41,7 +52,7 @@ import * as Plugin from '@/uni_modules/aiko-doc-viewer'
 
 真机验证 PDF 搜索/PNG 渲染/原文导出与资源释放；公开 UTS Markdown 打开、native-view 实际挂载、load/pagechange 事件及 ref 方法通过。PDF 组件蓝/红页实际像素翻页、正文搜索与渲染完成事件、断流失败重试与完整缓存专项回归 25/25 通过。
 
-**使用边界：**PDF 批注只保存在当前内存会话，当前不支持写回；已有批注时导出会明确失败。Office 是轻量预览，排版可能与原应用不同；iOS 不支持。
+**使用边界：**PDF批注仅暂存在当前内存会话，不渲染到页面也不写回文件；已有批注时导出会明确失败。Office 是轻量预览，排版可能与原应用不同；iOS 不支持。
 
 本轮以已连接的 Android 14 手机为验证设备；未声明所有系统版本、机型和业务场景均已验收。各平台差异按本节及后续平台说明处理。
 <!-- AIKO:RELEASE-NOTES:END -->
@@ -68,9 +79,9 @@ import * as Plugin from '@/uni_modules/aiko-doc-viewer'
 
 ## 一句话能力
 
-- **PDF**：`openPdf` 阅读、`searchPdfText` 搜索、`annotatePdf` 基础批注、`exportPdf` 导出、`getDocumentOutline` 目录
+- **PDF**：`openPdf` 阅读、`searchPdfText` 搜索、`annotatePdf` 暂存批注数据、`exportPdf` 导出未含批注的原文副本、`getDocumentOutline` 目录
 - **统一入口**：`openDocument` 自动识别 `pdf/doc/docx/ppt/pptx/xls/xlsx/md/txt` 并路由到对应预览器
-- **Office**：Word/PPT 解压 XML 转 HTML，WebView 分页预览（stub 可后续替换为完整引擎）
+- **Office**：Word/PPT 解压 XML 转 HTML，WebView 分页预览（轻量文本/表格预览，不是完整Office渲染引擎）
 - **Markdown**：内置 `convertMarkdownToHtml`，支持标题目录提取
 
 ---
@@ -106,7 +117,7 @@ AikoDocViewer.openDocument({
 | `openPdf` / `closePdf` | PDF 会话打开与关闭 |
 | `getPdfInfo` / `goToPage` | 文档信息与翻页 |
 | `searchPdfText` | PDF 全文搜索 |
-| `annotatePdf` / `exportPdf` | 基础批注与导出 |
+| `annotatePdf` / `exportPdf` | 内存暂存批注数据；无批注时导出原文副本，有批注明确拒绝写回 |
 | `getPdfCapabilities` | 平台能力矩阵 |
 | `openDocument` | 统一入口，自动识别格式 |
 | `renderDocumentPage` | 渲染单页（PDF 图片 / HTML 片段） |
@@ -189,7 +200,7 @@ uni 无 Office/PDF 原生阅读 API；本插件提供 openPdf 与 openDocument �
 | 主入口 | `openDocument、openPdf、renderDocumentPage、getDocumentOutline` |
 | Nexus 扩展 | openDocument 多格式路由、getDocumentOutline（PDF outline + MD 标题） |
 | 演示页 | `uni_modules/aiko-doc-viewer/example/uniappx/docviewer-demo` |
-| 平台 | Android 完整；iOS stub |
+| 平台 | Android（功能边界见页首）；iOS不支持 |
 
 ### 常见问题（FAQ）
 
@@ -312,4 +323,4 @@ saveReadingState(options)
 
 ### 新增示例与验证范围
 
-示例文件`example/uniappx/workflow-demo.uvue`，请将该路径注册到宿主pages.json后打开。演示使用真实插件API，不预填成功结果；旧演示保持可用。新增能力目前仅Android，iOS/Harmony/Web入口明确失败，不作为已支持平台宣传。独立Kotlin测试源覆盖实际像素、哈希、导出/持久状态及错误输入；发布前还须完成宿主UTS编译与真机日志验收，不能仅以静态预检代替。
+示例文件`example/uniappx/workflow-demo.uvue`，请将该路径注册到宿主pages.json后打开。演示使用真实插件API，不预填成功结果；旧演示保持可用。新增能力目前仅Android，iOS/Harmony/Web入口明确失败，不作为已支持平台宣传。独立Kotlin测试源覆盖实际像素、哈希、导出/持久状态及错误输入；本轮已完成宿主UTS编译、公开API与相关Native专项；覆盖范围见页首验收记录，不能将其扩大为所有交互/平台通过。

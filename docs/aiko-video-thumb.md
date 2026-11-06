@@ -5,6 +5,17 @@
 插件 ID 与导入路径仍为 `aiko-video-thumb`，既有 API 名称保持兼容。更新演示页时请保留实际权限、错误与能力诊断；不把未授权或未实现能力视为成功。
 <!-- NEXUS:BRAND:END -->
 
+<!-- NEXUS:WAVE10:VERIFICATION:START -->
+## 本轮验收记录（2026-11-06）
+
+本插件属于本轮2款新增、8款升级的交付。整批10项在同一台Android 14手机的两个实际测试宿主中完成Native专项：数据38条、工业扫码/标签28条、文档图像15条、媒体26条，合计107条；公开UTS新增链路另有30条回归通过。**这些是整批不同层次的检查数，不是本插件107个功能，也不能相加称为137个独立功能。** 本插件只对应其中相关检查，测试不替代全功能、全机型或长期稳定性验收。
+
+新增能力以Android uni-app x为本轮验证范围；普通uni-app及旧平台支持见各API说明。iOS/Harmony/Web不因本轮Android测试获得新增支持声明。实体PDA、DPM工件、BLE外设与纸张输出、完整Office排版、系统选择器所有跨UID/授权回收路径均不在本轮通过范围内。
+
+本轮新增截图为数据库、文件工作流和工业扫码业务页的真实whole-page页面快照，已人工查看；它们不含系统栏，也不证明相机现场ROI或其他插件所有按钮均已人工验收。
+<!-- NEXUS:WAVE10:VERIFICATION:END -->
+
+
 
 <!-- AIKO:RELEASE-NOTES:START -->
 ## 当前版本与授权价格
@@ -49,7 +60,7 @@ import * as Plugin from '@/uni_modules/aiko-video-thumb'
 
 ## 1.1.0 · 时间点接触表与可解释质量筛选（Android）
 
-这两项不等于原有“智能选帧/封面水印”换名：一项输出可核对时点的多格证据图和JSON；另一项输出**每个候选的像素指标、门槛拒绝原因及合格选择结果**。新代码已实现，真实设备和公开API回归由本轮统一APK执行，不冒称未测平台可用。
+这两项不等于原有“智能选帧/封面水印”换名：一项输出可核对时点的多格证据图和JSON；另一项输出**每个候选的像素指标、门槛拒绝原因及合格选择结果**。新代码及相关Android Native专项、公开UTS抽样链路已验收，覆盖范围见页首记录，不冒称未测平台可用。
 
 ### 带请求时间点的实际帧接触表
 
@@ -217,7 +228,7 @@ getVideoThumbnailWithWatermark({
 
 ## 示例页面
 
-`example/uniappx/thumb-demo.uvue` — 商务正式 UI 演示页，覆盖全部 API。
+`example/uniappx/thumb-demo.uvue` — 商务正式 UI 演示页，展示所列API；可运行不等于每个系统/设备路径都已验收。
 
 ## 自定义基座
 
@@ -248,7 +259,7 @@ getVideoThumbnailWithWatermark({
 | 主入口 | `getVideoThumbnail、getVideoThumbnails、getVideoThumbnailBatch` |
 | Nexus 扩展 | getSmartThumbnail（跳过黑帧）、getVideoThumbnailWithWatermark（文字水印） |
 | 演示页 | `uni_modules/aiko-video-thumb/example/uniappx/thumb-demo` |
-| 平台 | Android 完整；iOS stub |
+| 平台 | Android（功能边界见页首）；iOS不支持 |
 
 ### 常见问题（FAQ）
 
