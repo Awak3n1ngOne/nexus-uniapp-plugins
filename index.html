@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Nexus Wang 的 uni-app 插件公开文档与真实演示画廊。工业扫码、离线数据、设备连接、文档与多媒体。">
+  <meta name="theme-color" content="#F2F0E8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <title>Nexus Plugin Atlas · 插件文档与实机画廊</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#catalog">跳到插件集合</a>
+  <header class="masthead">
+    <a class="brand" href="#" aria-label="Nexus插件集合首页"><span class="brand-icon" aria-hidden="true">n.</span><span>NEXUS<span class="brand-sub">PLUGIN ATLAS</span></span></a>
+    <nav aria-label="主导航"><a href="#catalog">插件集合 <span id="navCount">25</span></a><a href="#about">关于作者</a><a id="githubLink" class="github-link" hidden target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav>
+    <span class="edition">FIELD NOTES / 2026</span>
+  </header>
+  <main>
+    <section class="intro" aria-labelledby="pageTitle">
+      <div class="intro-copy">
+        <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> NEXUS WANG / INDEPENDENT PLUGIN STUDIO</p>
+        <h1 id="pageTitle">让能力，<br>进入<span class="headline-accent">真实应用。</span></h1>
+        <p class="intro-description">从工业扫码，到离线数据与多媒体。<br>在这里看功能、读文档，也看看它真实运行的样子。</p>
+        <div class="intro-actions"><a class="button button-dark" href="#catalog">浏览插件集合 <span aria-hidden="true">↓</span></a><button id="scanShortcut" class="text-link">先看工业扫码 <span aria-hidden="true">↗</span></button></div>
+        <dl class="stats"><div><dt id="statPlugins">25</dt><dd>插件入口</dd></div><div><dt id="statDocs">23</dt><dd>本地说明文档</dd></div><div><dt id="statRuntime">20</dt><dd>款实机画面</dd></div></dl>
+      </div>
+      <div class="feature" id="featuredPlugin" aria-busy="true">
+        <div class="feature-header"><span>IN FOCUS / 本轮重点</span><span>VOL. 01</span></div>
+        <div class="feature-tabs" role="group" aria-label="重点插件预览类型"><button id="featureCover" class="is-active" aria-pressed="true">品牌封面</button><button id="featureRuntime" aria-pressed="false">实机演示</button></div>
+        <div class="feature-art"><img id="featureImage" alt="Nexus工业扫码插件预览" width="1600" height="900"></div>
+        <div class="feature-bottom"><div><p class="feature-kicker">NEXUS / INDUSTRIAL SCAN</p><h2>把每一次扫码，<br>变成可核对的采集。</h2><p id="featureCaption">工业扫码 · 自定义界面 · 业务确认</p></div><button id="featureOpen" class="round-link" aria-label="打开工业扫码说明">↗</button></div>
+        <p class="feature-note" id="featureNote">正在加载公开文档…</p>
+      </div>
+    </section>
+    <section class="catalog-section" id="catalog" aria-labelledby="catalogTitle">
+      <div class="section-heading"><div><p class="eyebrow">01 / THE COLLECTION</p><h2 id="catalogTitle">为你的下一次构建，<br>选一项能力。</h2></div><p class="section-aside">文档、封面与真实演示，放在一起。<br>功能和支持范围，请以各插件说明为准。</p></div>
+      <div class="catalog-tools">
+        <div class="search-wrap"><label for="pluginSearch" class="sr-only">搜索插件名称、ID或功能</label><span aria-hidden="true">⌕</span><input id="pluginSearch" type="search" autocomplete="off" placeholder="搜索名称、功能或插件 ID"><kbd aria-hidden="true">/</kbd></div>
+        <div class="view-switch" role="group" aria-label="画廊预览类型"><button id="galleryCover" class="is-active" aria-pressed="true">封面画廊</button><button id="galleryRuntime" aria-pressed="false">实机画面</button></div>
+      </div>
+      <div id="categoryFilters" class="category-filters" role="group" aria-label="插件分类"></div>
+      <div class="result-line"><p id="resultCount" aria-live="polite">正在加载插件…</p><p id="previewHint">封面为品牌设计图；实机图单独标注。</p></div>
+      <noscript><p>交互目录需要启用JavaScript。完整Markdown文档仍可在GitHub仓库的docs目录读取。</p></noscript>
+      <div id="pluginGrid" class="plugin-grid" aria-label="插件画廊"></div>
+      <div id="emptyState" class="empty-state" hidden><span aria-hidden="true">∅</span><h3>没有找到对应插件</h3><p>试试“扫码”“文件”“语音”，或清除筛选。</p><button id="clearFilters" class="button button-dark">清除筛选</button></div>
+      <div id="loadError" class="empty-state" hidden><h3>插件目录暂时未能加载</h3><p>请通过HTTP服务或GitHub Pages打开页面，然后重新加载。</p><button id="retryLoad" class="button button-dark">重新加载</button></div>
+    </section>
+    <section class="about" id="about" aria-labelledby="aboutTitle"><div class="about-heading"><span class="brand-icon big" aria-hidden="true">n.</span><p class="eyebrow">02 / THE MAKER</p></div><div class="about-copy"><h2 id="aboutTitle">Nexus Wang</h2><p class="about-role">AI 产品经理 / 重度 Vibe Coder / AIGC 内容创作</p><p class="about-motto">无论何时，请不要放弃热爱，<br>保持好奇心和创造力。</p><a href="https://ext.dcloud.net.cn/publisher?id=165685" target="_blank" rel="noopener noreferrer" class="text-link">查看官方插件市场主页 ↗</a></div><p class="about-note">本页收录公开说明与展示素材。截图证明对应页面或操作真实发生，不代表所有平台、设备、授权或业务场景已完成验收。购买版本与价格以官方市场页面为准。</p></section>
+  </main>
+  <footer class="site-footer"><span>NEXUS / BUILT WITH CURIOSITY.</span><span id="updatedLabel">2026 · 插件公开文档集合</span><a href="#" aria-label="回到顶部">BACK TO TOP ↑</a></footer>
+  <dialog id="pluginDialog" class="plugin-dialog" aria-labelledby="detailTitle">
+    <div class="dialog-bar"><a id="detailMarketTop" class="dialog-market" target="_blank" rel="noopener noreferrer" hidden>官方市场 ↗</a><span id="detailId"></span><button id="closeDialog" class="close-dialog" aria-label="关闭插件详情">关闭 <span aria-hidden="true">×</span></button></div>
+    <div class="dialog-scroll" id="dialogScroll">
+      <div class="detail-hero"><p id="detailKicker" class="eyebrow"></p><h2 id="detailTitle"></h2><p id="detailDescription"></p><div id="detailMeta" class="detail-meta"></div></div>
+      <div class="detail-layout"><aside class="detail-aside"><div id="detailGallery" class="detail-gallery"></div><p id="detailVerification" class="detail-verification"></p><div id="detailActions" class="detail-actions"></div><nav id="documentToc" class="document-toc" aria-label="本文目录"></nav></aside><article id="documentBody" class="document-body" aria-label="插件完整说明"></article></div>
+      <footer class="detail-footer">NEXUS PLUGIN SERIES / BY NEXUS WANG</footer>
+    </div>
+  </dialog>
+  <dialog id="imageDialog" class="image-dialog" aria-label="截图原图预览"><button id="closeImage" class="close-image" aria-label="关闭截图预览">×</button><img id="fullImage" alt=""><p id="fullImageCaption"></p></dialog>
+</body>
+</html>
