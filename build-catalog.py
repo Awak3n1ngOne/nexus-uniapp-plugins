@@ -72,7 +72,7 @@ for index,pid in enumerate(order,1):
         if path.exists():screens.append({'src':copy_asset(path,f'assets/screens/{f}'),'label':label+' · 自建样本','kind':'operation'})
     for j,x in enumerate(ov.get('screens',[])):
         f=Path(x['file']);f=f if f.is_absolute() else output/f
-        if f.exists():screens.insert(j,{'src':copy_asset(f,f'assets/screens/{pid}-wave-{j}{f.suffix}'),'label':x.get('label','本轮Android实际画面'),'kind':'operation','version':'本轮Android实机画面'})
+        if f.exists():screens.insert(j,{'src':copy_asset(f,f'assets/screens/{pid}-wave-{j}{f.suffix}'),'label':x.get('label','本轮Android实际画面'),'kind':x.get('kind','operation'),'version':'本轮Android实机画面'})
     isnew=pid.startswith('nexus-');market=base_market.get(pid,{})
     marketurl=None if isnew else f'https://ext.dcloud.net.cn/plugin?name={pid}'
     published=ov.get('publishedVersion',market.get('version'))

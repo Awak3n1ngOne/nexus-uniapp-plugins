@@ -1,7 +1,7 @@
 {
   "brand": "Nexus Wang",
   "title": "Nexus Plugin Atlas",
-  "updatedAt": "2026-11-06T23:29:08.812715+08:00",
+  "updatedAt": "2026-11-06T23:32:49.027785+08:00",
   "githubUrl": "https://github.com/Awak3n1ngOne/nexus-uniapp-plugins",
   "plugins": [
     {
@@ -70,7 +70,7 @@
         {
           "src": "assets/screens/nexus-camera-core-wave-0.png",
           "label": "Android真实演示页 · 未启动镜头状态",
-          "kind": "operation",
+          "kind": "runtime",
           "version": "本轮Android实机画面"
         }
       ],
@@ -107,7 +107,7 @@
         {
           "src": "assets/screens/nexus-file-workflow-wave-0.png",
           "label": "1.1版Android真实演示页 · 尚未选择文件",
-          "kind": "operation",
+          "kind": "runtime",
           "version": "本轮Android实机画面"
         },
         {
