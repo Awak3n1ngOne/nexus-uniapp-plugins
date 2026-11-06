@@ -25,6 +25,7 @@ overrides=read_json(override_path,{})
 if 'plugins' in overrides: overrides=overrides['plugins']
 category={
  'aiko-scan-pro':('工业与设备','SCAN','扫码、识别与盘点'), 'aiko-ble-core':('工业与设备','CONNECT','设备连接与标签打印'),
+ 'nexus-camera-core':('多媒体','CAMERA','自定义相机与影像采集'),
  'nexus-sqlite-core':('数据与文件','DATA','离线数据与发送队列'), 'nexus-file-workflow':('数据与文件','FILES','附件导入与版本交接'),
  'aiko-doc-scan':('文档与图像','CAPTURE','文档扫描与透视矫正'), 'aiko-doc-viewer':('文档与图像','READER','应用内文档阅读'),
  'aiko-image-edit':('文档与图像','IMAGE','裁剪、编辑与隐私处理'), 'aiko-gallery-hub':('多媒体','GALLERY','媒体查询与交接'),
@@ -36,7 +37,7 @@ category={
  'aiko-device-id':('系统与业务','IDENTITY','设备标识与可用性诊断'), 'aiko-keep-alive':('系统与业务','ALIVE','前台服务与运行保障'),
  'aiko-float-window':('系统与业务','WINDOW','系统悬浮窗口'), 'aiko-alipay-core':('系统与业务','ALIPAY','支付宝授权与支付桥接'),
  'aiko-wechat-core':('系统与业务','WECHAT','微信接入诊断与分享')}
-order=['aiko-scan-pro','nexus-sqlite-core','nexus-file-workflow','aiko-ble-core','aiko-doc-scan','aiko-doc-viewer','aiko-image-edit','aiko-gallery-hub','aiko-video-edit','aiko-video-thumb','aiko-bg-audio','aiko-smart-tts','aiko-asr','aiko-call-recorder','aiko-live-player','aiko-cast-core','aiko-share-core','aiko-geo-core','aiko-device-id','aiko-keep-alive','aiko-float-window','aiko-alipay-core','aiko-wechat-core']
+order=['aiko-scan-pro','nexus-camera-core','nexus-file-workflow','nexus-sqlite-core','aiko-ble-core','aiko-doc-scan','aiko-doc-viewer','aiko-image-edit','aiko-gallery-hub','aiko-video-edit','aiko-video-thumb','aiko-bg-audio','aiko-smart-tts','aiko-asr','aiko-call-recorder','aiko-live-player','aiko-cast-core','aiko-share-core','aiko-geo-core','aiko-device-id','aiko-keep-alive','aiko-float-window','aiko-alipay-core','aiko-wechat-core']
 shotnames={'aiko-alipay-core':'01-alipay.png','aiko-asr':'02-asr.png','aiko-ble-core':'03-ble-core.png','aiko-call-recorder':'04-call-recorder.png','aiko-cast-core':'05-cast-core.png','aiko-device-id':'06-device-id.png','aiko-doc-scan':'07-doc-scan.png','aiko-doc-viewer':'08-doc-viewer.png','aiko-float-window':'09-float-window.png','aiko-gallery-hub':'10-gallery-hub.png','aiko-geo-core':'11-geo-core.png','aiko-image-edit':'12-image-edit.png','aiko-keep-alive':'13-keep-alive.png','aiko-live-player':'14-live-player.png','aiko-scan-pro':'15-scan-pro.png','aiko-share-core':'16-share-core.png','aiko-smart-tts':'17-smart-tts.png','aiko-video-edit':'18-video-edit.png','aiko-video-thumb':'19-video-thumb.png','aiko-wechat-core':'20-wechat-core.png'}
 effects={'aiko-doc-viewer':('document-effect.png','实际Markdown阅读'),'aiko-video-edit':('video-effect.png','实际三帧预览拼图'),'aiko-video-thumb':('thumbnail-effect.png','实际Nexus水印封面')}
 wave={'aiko-scan-pro','nexus-sqlite-core','nexus-file-workflow','aiko-ble-core','aiko-doc-scan','aiko-doc-viewer','aiko-image-edit','aiko-gallery-hub','aiko-video-edit','aiko-video-thumb'}

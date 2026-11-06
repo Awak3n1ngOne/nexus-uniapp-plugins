@@ -13,20 +13,32 @@
       "sha256": "da86bf0739dccadc54495847095739b2ec8b255f3a1dc64030acfd52ece32057"
     },
     {
+      "path": "assets/covers/nexus-camera-core.png",
+      "sha256": "d4b8bb9d8a6a9a8cfac9935083bcbe885477e3c8698f18d80d493789cddc9b7a"
+    },
+    {
+      "path": "assets/screens/nexus-camera-core-wave-0.png",
+      "sha256": "9d20bfa8dc2c06653cf7ef984e12fa8a5b3e160111806a38030c6fa439f458b5"
+    },
+    {
+      "path": "assets/covers/nexus-file-workflow.png",
+      "sha256": "ab400ff1815ff6502629829701a967ad961773c40a37c4279772d5a03dec9c73"
+    },
+    {
+      "path": "assets/screens/nexus-file-workflow-wave-0.png",
+      "sha256": "07969bdcddd2acedd4233f8095693132effe24e0c679e9850b027624c2b0bf49"
+    },
+    {
+      "path": "assets/screens/nexus-file-workflow-wave-1.png",
+      "sha256": "d3fc89cc2dd9fde88081fc10faa66715b94255f8c4fb3d5fb8ce4d0aff6d7e07"
+    },
+    {
       "path": "assets/covers/nexus-sqlite-core.png",
       "sha256": "ed159920641d84d72a989c7754ae43b8efa8feef65dd4f93d139a9af3689c98c"
     },
     {
       "path": "assets/screens/nexus-sqlite-core-wave-0.png",
       "sha256": "eafe23112ed32af03f1fb72cd5f39cc1b88e020c3a10e2db6eb52eec627551a0"
-    },
-    {
-      "path": "assets/covers/nexus-file-workflow.png",
-      "sha256": "d31ac1fc5d3ca3389d2916d147e9344031186316b4bb5c236f02001e658aaf33"
-    },
-    {
-      "path": "assets/screens/nexus-file-workflow-wave-0.png",
-      "sha256": "d3fc89cc2dd9fde88081fc10faa66715b94255f8c4fb3d5fb8ce4d0aff6d7e07"
     },
     {
       "path": "assets/covers/aiko-ble-core.png",
@@ -209,5 +221,5 @@
       "imageUrl": "https://img-cdn-tx.dcloud.net.cn/stream/plugin_screens/6acc7f30-ebd9-11ef-96f2-61d2a6924ed8_0.gif?&v=1739706013"
     }
   ],
-  "count": 51
+  "count": 54
 }

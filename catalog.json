@@ -1,7 +1,7 @@
 {
   "brand": "Nexus Wang",
   "title": "Nexus Plugin Atlas",
-  "updatedAt": "2026-11-06T22:05:45.847932+08:00",
+  "updatedAt": "2026-11-06T22:56:47.663392+08:00",
   "githubUrl": "https://github.com/Awak3n1ngOne/nexus-uniapp-plugins",
   "plugins": [
     {
@@ -48,8 +48,88 @@
       "externalOnly": false
     },
     {
-      "id": "nexus-sqlite-core",
+      "id": "nexus-camera-core",
       "number": 2,
+      "name": "Nexus 自定义相机",
+      "shortName": "自定义相机",
+      "category": "多媒体",
+      "kicker": "CAMERA",
+      "purpose": "自定义相机与影像采集",
+      "description": "Android 嵌入式相机：拍照、真实MP4录像、预览帧取色、拍摄模板与SHA256证据侧车。",
+      "version": "1.0.0",
+      "publishedVersion": "1.0.0",
+      "marketCheckedAt": "2026-11-06T22:55:35+08:00",
+      "state": "published",
+      "stateLabel": "已上架",
+      "marketUrl": "https://ext.dcloud.net.cn/plugin?name=nexus-camera-core",
+      "author": "Nexus Wang",
+      "readme": "# Nexus 自定义相机\n\n**Nexus Wang · Android uni-app x · 1.0.0**\n\n把真实相机预览嵌入自己的页面，在预览旁放置业务按钮与说明。支持 JPEG 拍照、MP4 录像、前后摄、缩放、对焦、补光、实际预览帧抓取与像素取色。提供严格拍摄模板和每份产物的 SHA256 证据侧车。\n\n普通授权 ¥29.90，源码授权 ¥299.00。仅 Android uni-app x 标准模式，Android 6.0 / API 23+；其他平台、普通 uni-app、后台或隐藏拍摄未实现。正式机型的相机、编码器与分辨率能力由设备决定。\n\n## 接入与权限\n\n依赖 CameraX 1.6.1（camera-core/camera-camera2/camera-lifecycle/camera-view/camera-video），由 app-android/config.json 声明。宿主 Activity 必须实现 LifecycleOwner。新增依赖/权限后重建调试基座。Manifest 声明 CAMERA 与 RECORD_AUDIO；运行时只在显式 requestCameraPermissions 时申请，audio 未设或 false 不申请录音权限。\n\n```vue\n<template>\n  <view style=\"height: 320px;\">\n    <nexus-camera-core :cameraId=\"cameraId\" @ready=\"onReady\" @statechange=\"onState\" />\n  </view>\n  <button @click=\"start\">启动预览</button>\n</template>\n<script setup lang=\"uts\">\nimport * as Camera from '@/uni_modules/nexus-camera-core'\nimport { CameraOptions } from '@/uni_modules/nexus-camera-core'\nconst cameraId = 'order-camera'\nfunction onReady(res: UTSJSONObject): void { console.log('mounted', res) }\nfunction onState(res: UTSJSONObject): void { console.log('actual state', res) }\nfunction start(): void {\n  const permission: CameraOptions = {\n    cameraId,\n    success: (res: UTSJSONObject) => {\n      const options: CameraOptions = { cameraId, mode: 'PHOTO' }\n      Camera.startCamera(options)\n    },\n    fail: (err: UTSJSONObject) => { console.log(err) }\n  }\n  Camera.requestCameraPermissions(permission)\n}\nonUnload(() => {\n  const options: CameraOptions = { cameraId }\n  Camera.destroyCamera(options)\n})\n</script>\n```\n\n组件 ready 仅表示已挂载，不自动请求权限或启动镜头；需要先等待 ready，再由用户操作启动。cameraId 在一个组件生命周期内固定，不通过响应式改 ID 复用组件。公开 API 必须从模块根目录导入。演示位于 `example/uniappx/camera-demo.uvue`，没有宿主日志组件依赖，也没有自动拍摄流程。叠加 UI 由宿主布局实现，不内置快门样式。\n\n## 公开 API\n\ncreateCameraId() 同步生成 UUID 镜头 ID；除其与 mountCameraView（使用 CameraMountOptions）外，其余函数使用同一个具名 CameraOptions，所有调用须填写 cameraId。回调统一 `{ code, message, data }`；success 或 fail 之一与 complete 各至多一次，在主线程投递，业务回调抛异常不会变成第二次 API 失败。录制的 startCameraRecording 特别在最终文件与证据就绪后才 success，开始时监听组件 recordstart。\n\n| API | 参数 / 结果 |\n| --- | --- |\n| requestCameraPermissions | 可选 audio；默认只请求 CAMERA，audio=true 另请求 RECORD_AUDIO |\n| startCamera / resumeCamera | mode=PHOTO/VIDEO、facing=back/front、可选 template；绑定完成返回，actual OPEN/STREAMING 由 statechange/getCameraState 确认 |\n| pauseCamera / stopCamera | 取消未完成启动/拍照/帧输出；仅解绑自己的用例。录像先 stop 等 Finalize 与输出终结后再解绑/回调；恢复需显式 resume |\n| destroyCamera | 幂等释放已挂载会话；终结录像并删除未交付输出，卸载组件同样清理。不自动删除已经交付的产物 |\n| setCameraMode | mode 和可选 template；录像、证据提交、启动处理中返回失败，不中断后假成功 |\n| switchCamera | facing 明确指定 front/back；不会自行反转；可能返回设备缺少该镜头 |\n| setCameraZoom | zoomRatio，必须在设备 minZoomRatio/maxZoomRatio 范围内 |\n| focusCamera | x/y 都在 [0,1]，按可见 PreviewView 坐标生成测光点；返回 focusSuccessful，设备可不支持 |\n| setCameraTorch | on；无补光灯返回失败 |\n| takeCameraPhoto | PHOTO 模式，真实 JPEG；返回路径、尺寸、EXIF orientation、SHA 与侧车路径 |\n| startCameraRecording | VIDEO 模式，audio 默认 false；有声需预先单独授权。最终成功返回真实 MP4 路径、时长/尺寸/旋转/hasAudio、SHA 与侧车 |\n| stopCameraRecording | 仅有效录制可调用；等待同一 Finalize 与证据，返回与录制终态相同产物。无录制/已终结返回失败 |\n| grabCameraFrame | 仅实际 STREAMING 时取得 PreviewView.COMPATIBLE bitmap，真实 PNG，返回实际预览尺寸与 SHA 侧车 |\n| readCameraPixel | x/y 在 [0,1]，左上(0,0)、右下(1,1)，映射 floor(x*(width-1))；返回 RGB/alpha/#RRGGBB 与实际像素坐标 |\n| getCameraState | bound/paused、mode/facing、cameraState、previewState、recording/finishing/busy、generation、模板、缩放范围与 hasFlash |\n| clearCameraOutputs | 仅此 cameraId 空闲时清理其缓存文件；先自行导出重要产物，无确认弹窗 |\n\n组件事件：ready、statechange（实际状态）、recordstart、recordcomplete（完整终态 envelope）、error（挂载错误）。组件 ref 使用框架 `ComponentPublicInstance` / `$callMethod`；主要业务建议直接按 cameraId 调公开 API。defineExpose 提供 start(options)、pause/resume/stop/dispose。\n\n## 拍摄模板\n\n`CameraTemplate` 可选字段如下，未知字段、错误类型、小数整数参数、超界值均拒绝，不静默扩大限制。JSON null 使用默认/继承值。\n\n| 字段 | 默认与边界 |\n| --- | --- |\n| aspect | 4:3；仅 4:3 / 16:9；照片绑定 ViewPort 裁剪，录像传递 Recorder 请求比例，实际尺寸以文件 metadata 为准 |\n| jpegQuality | 90；整数 1–100，JPEG 编码质量，并非尺寸 |\n| videoQuality | HD；仅 SD/HD/FHD/UHD，设备不支持精确档位即失败，无静默降级 |\n| maxDurationMs | 10000；整数 1000–60000，真实录像到限触发 CameraX Finalize |\n| maxOutputBytes | 20971520；整数 1048576–134217728，录像设置文件限制；所有输出提交前再次检查真实字节数 |\n\nPHOTO 只绑定 Preview+ImageCapture；VIDEO 只绑定 Preview+VideoCapture，不组合四个 UseCase。不声称固定输出像素尺寸、精确帧率、视频裁切后处理或传感器原始数据。到达时长/文件限制的 CameraX Finalize 视为预期停止，仍须真实 MP4 可读、非空且不超过字节限制，stopReason 返回原生终态码。其他终态错误删除输出并 fail。\n\n## 图像方向与证据边界\n\n预览帧和取色来自屏幕上 PreviewView 的实际 bitmap，包含其显示旋转、裁剪与前摄镜像；分辨率是预览控件像素，不是传感器全分辨率。JPEG 可能用 EXIF 标记方向，读取 exifOrientation 正确显示；JPEG/MP4 不额外做前摄镜像，视频实际旋转返回 metadata.rotation。像素颜色来自预览图像处理结果，不作传感器/色卡的校准色值。\n\n每份成功输出写应用私有随机文件，同时提交 `.evidence.json`（临时 part→rename）。包括输出真实字节数/SHA256、类型、时间、请求模板与实际媒体 metadata；返回 evidencePath。SHA 只证明与该文件字节的一致性，不是签名、时间戳公证或内容真实性证明。不上传、不写公共相册、不覆盖调用方文件。缓存文件可被系统回收，需业务自行复制到持久业务目录。\n\n最多四个挂载视图；后台输出单工作线程、等待队列 4。整个插件缓存设 512MiB / 128文件保守预留（每个待输出预留模板字节上限、2文件与64KiB侧车预算，实际文件和预留可重复计入而提前拒绝）。此为插件的保守预留/最终提交限制，不是操作系统硬磁盘配额；CameraX 写入过程中仍可能出现短暂额外磁盘占用。超限明确失败，不自动删除已交付图片。单次预览 bitmap 上限 8MP、边长4096；超限拒绝，不强行申请大图。CameraX 的设备端编码/内存仍受硬件资源约束，多预览并发可能不支持。\n\n## 生命周期与验收\n\n必须是已附着、可见、处于前台的组件才可启动/拍摄。Activity ON_STOP 自动停止自己的录制并释放自己的用例；返回页面不会自动恢复。卸载/销毁后旧代际回调不再交付照片/预览帧；未交付文件会清理。录像暂停/停止时先完成 Finalize，销毁时取消未交付产物；从不调用 unbindAll。控件命令异步完成时校验代际。\n\n错误码：9071001 入参/状态/忙碌，9071002 权限桥，9071003 绑定/控制失败，9071004 工作队列（部分路径以9071006返回输出失败），9071005 取消，9071006 输出/录像失败。请以 code!=0 判失败并展示 message，不把挂载或绑定成功当作真实拍摄成功。\n\n### 本轮验收记录（2026-11-06）\n\nAndroid 14 / Redmi 22101317C，HBuilderX 5.34、uni-app x：23条相机原生核心检查通过；公开UTS驱动24条后摄操作断言通过，28次被跟踪API调用逐一确认success/fail互斥、complete一次且调用/回调均在主线程。范围包含PHOTO/VIDEO实际OPEN+STREAMING、JPEG、预览PNG、取色、1/2倍缩放、中心对焦控制、补光开关、录像期间模式切换拒绝、静音录像Finalize、暂停/恢复与销毁API状态。挂载事件不计入28次API回调数。\n\n照片2448×1836、实际控件预览帧981×880、H.264 MP4 720×406约2.63秒（计时在真实recordstart后约3秒发起停止），视频无音轨。三份真实产物已从应用私有目录独立读回，解码、真实字节大小、SHA256与证据侧车均一致；分辨率和时长只代表本机本次样本。生产演示页截图是未启动镜头的真实默认状态，不是录像画面。\n\n暂停/停止验证了当前会话解绑命令和引用状态；state.cameraState在无引用时为CLOSED，不据此宣称独立观察到了硬件关闭事件。未测试前摄产物、有声录制、全部质量档位、60秒/存储极限、多视图并发和长期资源稳定性；其他机型/系统与普通uni-app未验收。对焦返回值按设备实际结果读取，不保证所有场景对焦命中。测试前由使用者准备无隐私画面，再显式授权与拍摄。\n\n官方依据：[CameraX 录像架构](https://developer.android.com/media/camera/camerax/video-capture)、[PreviewView API](https://developer.android.com/reference/androidx/camera/view/PreviewView)、[UTS 插件](https://doc.dcloud.net.cn/uni-app-x/plugin/uts-plugin.html)。CameraX 使用 Apache 2.0 开源许可。\n",
+      "docUrl": "docs/nexus-camera-core.md",
+      "cover": "assets/covers/nexus-camera-core.png",
+      "screens": [
+        {
+          "src": "assets/screens/nexus-camera-core-wave-0.png",
+          "label": "Android真实演示页 · 未启动镜头状态",
+          "kind": "operation",
+          "version": "本轮Android实机画面"
+        }
+      ],
+      "wave10": false,
+      "platforms": {
+        "android": "√",
+        "ios": "x",
+        "harmony": "x"
+      },
+      "verification": "Android14本机：相机Native23条、公开UTS后摄操作24条、28次被跟踪API回调主线程及一次终态检查通过；三份真实媒体独立解码/字节/SHA与侧车一致。其他机型/前摄/有声与极限场景未验收，详README。",
+      "hasLocalDoc": true,
+      "externalOnly": false
+    },
+    {
+      "id": "nexus-file-workflow",
+      "number": 3,
+      "name": "Nexus 文件选择与附件工作流",
+      "shortName": "文件选择与附件工作流",
+      "category": "数据与文件",
+      "kicker": "FILES",
+      "purpose": "附件导入与版本交接",
+      "description": "Android 系统文件单多选、MIME过滤与持久URI读授权管理，衔接私有导入、SHA256及附件版本链。",
+      "version": "1.1.0",
+      "publishedVersion": "1.0.0",
+      "marketCheckedAt": "2026-11-06T22:04:46.019893+08:00",
+      "state": "upgrading",
+      "stateLabel": "已上架1.0 · 1.1系统选择升级验收中",
+      "marketUrl": "https://ext.dcloud.net.cn/plugin?name=nexus-file-workflow",
+      "author": "Nexus Wang",
+      "readme": "# Nexus 文件选择与附件工作流\n\n<!-- NEXUS:WAVE10:VERIFICATION:START -->\n## 1.0.0历史验收记录（2026-11-06）\n\n本插件1.0.0属于此前2款新增、8款升级的交付；以下107/30是该历史批次记录，不是1.1.0系统选择器的新增验收。整批10项已在同一台Android14手机的统一Native复验APK中完成：数据38条、工业扫码/标签28条、文档图像15条、媒体26条，合计107条全部通过，0失败、0跳过；公开UTS新增链路另有30条真实回归通过。**这些是整批不同层次的检查数，不是本插件107个功能，也不能相加称为137个独立功能。** 本插件只对应其中相关检查，测试不替代全功能、全机型或长期稳定性验收。\n\n新增能力以Android uni-app x为本轮验证范围；普通uni-app及旧平台支持见各API说明。iOS/Harmony/Web不因本轮Android测试获得新增支持声明。实体PDA、DPM工件、BLE外设与纸张输出、完整Office排版、系统选择器所有跨UID/授权回收路径均不在本轮通过范围内。\n\n本轮新增截图为数据库、文件工作流和工业扫码业务页的真实whole-page页面快照，已人工查看；它们不含系统栏，也不证明相机现场ROI或其他插件所有按钮均已人工验收。\n<!-- NEXUS:WAVE10:VERIFICATION:END -->\n\n\n作者：**Nexus Wang** · 插件ID：`nexus-file-workflow` · 版本：1.1.0\n\n面向工业工单、盘点证据与文档交接：1.1新增真实Android系统文件选择器，单选/多选、MIME过滤及明确的URI读授权管理，衔接原有有界导入、SHA256与不可变附件版本链。只处理用户明确选择或宿主明确传入的文档，不扫描未选择的私人文件，不自动联网。\n\n**支持：Android uni-app x，最低API 23。** 本轮未提供iOS、Harmony、Web、小程序和普通uni-app适配。HBuilderX建议5.07及以上；构建与真机结果以交付验收报告为准。\n\n## 1.1新增：系统文件选择\n\n使用Android `ACTION_OPEN_DOCUMENT`＋`CATEGORY_OPENABLE`，只请求读授权；不请求写授权、`MANAGE_EXTERNAL_STORAGE`、广泛存储或媒体读取权限。系统提供方可包含本地与云端文档，实际提供方和设备策略以系统选择界面为准。\n\n```ts\nimport * as Files from '@/uni_modules/nexus-file-workflow'\nimport { NexusChooseFilesOptions } from '@/uni_modules/nexus-file-workflow'\n\nconst options: NexusChooseFilesOptions = {\n  mimeTypes: ['text/plain', 'application/pdf'],\n  multiple: true,\n  maxCount: 3,\n  maxBytes: 8388608,\n  persistRead: false,\n  timeoutMs: 180000,\n  success: (result: UTSJSONObject): void => {\n    const items = result.getJSON('data')?.getArray<UTSJSONObject>('items')\n    // item.uri 是content://，不是可猜测的磁盘绝对路径。\n    // 若需长期可靠使用，应明确导入私有工作区，或验证持久读授权结果。\n    console.log('selected count=' + (items?.length ?? 0).toString())\n  },\n  fail: (result: UTSJSONObject): void => {\n    console.log(result.getNumber('code'), result.getString('message'))\n  }\n}\nFiles.chooseSystemFiles(options)\n```\n\n### 新增API与具名类型\n\n以下类型均从插件根目录真实导出，可直接在uni-app x中import，不需要导入utssdk内部路径。\n\n| API | Options类型 | 语义 |\n| --- | --- | --- |\n| `chooseSystemFiles` | `NexusChooseFilesOptions` | 打开系统文档选择界面，收到可读文档结果后成功；取消和异常走fail |\n| `cancelSystemFilePicker` | `NexusCancelFilePickerOptions` | 结束指定/当前插件请求的逻辑等待，不关闭外部系统界面 |\n| `getSystemFilePickerState` | `NexusFilePickerStateOptions` | 返回本插件busy/phase/requestId/requestCode |\n| `getPersistedFileGrants` | `NexusPersistedGrantOptions` | 只列本插件明确选择并登记的URI，与宿主全局URI授权列表区分 |\n| `releasePersistedFileGrant` | `NexusPersistedGrantOptions` | 仅在本插件取得且代际匹配时释放读授权；其他授权只解除自身登记 |\n\n所有新Options都展开`success?/fail?/complete?`，回调数据为`UTSJSONObject`。每个终态只投递一次到主线程；success或fail后会调用complete，消费方回调异常不会被改报成第二次失败。\n\n`NexusChooseFilesOptions`字段：\n\n| 字段 | 默认值与限制 |\n| --- | --- |\n| `mimeTypes?:string[]` | 默认`['*/*']`，1–16个有效MIME模式；type/subtype各最多127字符且以字母数字开头，拒绝`../txt`等无效名称；支持`image/*`、`*/*`等。多个类型使用EXTRA_MIME_TYPES |\n| `multiple?:boolean` | 默认false |\n| `maxCount?:number` | 单选必须为1；多选默认9，允许1–20整数。返回ClipData与data URI按系统返回顺序去重；超过数量明确失败，不静默截断。最多处理100个原始候选 |\n| `maxBytes?:number` | 默认16MiB，1字节–100MiB整数。**选择阶段仅按提供方已知元数据大小初筛，不是全流读取保证。** 另做一次1字节可读性探测；大小未知返回null，虚报或未知长度必须在后续importWorkspaceFile中按实际流式字节再限制 |\n| `persistRead?:boolean` | 默认false；true时也只按实际READ＋PERSISTABLE返回flags及系统take结果决定，不把请求成功当永久授权 |\n| `timeoutMs?:number` | 默认180000，5000–600000整数；包含结果处理等待。超时走fail，不能据此声称系统DocumentsUI已被关闭 |\n| `localOnly?:boolean` | 默认false；true请求系统仅显示本地文档，实际提供方由系统实现 |\n\n`NexusCancelFilePickerOptions`额外字段`requestId?:string`；省略时针对本插件当前请求。多调用方或页面退出时建议先读取并保留自己请求ID，再指定ID取消，避免结束其他调用方之后启动的请求。请求不匹配/没有请求时成功返回`cancelled:false`和实际busy状态，不会伪造选择成功。\n\n`NexusFilePickerStateOptions`只有回调字段。`NexusPersistedGrantOptions`在释放时须提供`uri:string`，查询时无需uri。\n\n### 返回文档数据\n\n成功data示例：\n\n```json\n{\n  \"items\": [{\n    \"uri\": \"content://用户明确选择的提供方/document/id\",\n    \"name\": \"测试工单.pdf\",\n    \"nameTruncated\": false,\n    \"mimeType\": \"application/pdf\",\n    \"size\": null,\n    \"sizeKnown\": false,\n    \"readable\": true,\n    \"persistedRead\": false,\n    \"grantOwned\": false,\n    \"preexistingHostGrant\": false,\n    \"persistenceStatus\": \"not_requested\"\n  }],\n  \"count\": 1,\n  \"multiple\": false,\n  \"persistReadRequested\": false,\n  \"metadataSizeOnly\": true\n}\n```\n\n- name去掉控制字符、最多256个Unicode码点；原始名称仅作为显示文本，不拿来拼接输出路径。\n- URI只接受content协议，不转猜测的“真实路径”。MIME按实际提供方getType再校验；指定过滤器下未知类型也会明确失败。\n- size未知是null，零字节是0，二者不同。readable仅表示已成功打开并探测流，不保证后续云端传输不会中断。\n- persistenceStatus可能为not_requested、not_offered、provider_denied、provider_unsupported、preexisting_host_grant、already_owned、acquired或not_acquired。应以persistedRead实际布尔值判断是否已持久化。\n\n### 授权生命周期与取消边界\n\n本插件只登记用户经本插件明确选择并取得/已有的持久读URI，不把宿主其他插件的授权全量列出来。首次持久化前检查宿主是否已持有读授权：已有的标记为preexisting，`releasePersistedFileGrant`只解除本插件登记，不撤销它。\n\n本插件新取得的授权记录实际`persistedTime`代际。再次选择本插件同代际owned URI仍识别为自有；宿主/系统外部撤回再取得或其他功能再次take导致代际变化时，不把旧owned布尔值当当前所有权。释放仅请求READ，绝不顺便释放WRITE。\n\nAndroid URI授权仍是**同一宿主UID共享**的资源。登记和代际比较不能证明其他消费者没有使用同一授权；宿主应协调共享URI的保留/释放、多账号可见性和退出策略，不能把本插件登记当账号认证或系统级私有权限沙箱。用户撤回、提供方删除文档或系统清理后，旧URI仍可能失效。\n\n每次请求使用单独UUID和本进程不复用的requestCode，精确处理相同请求号，终态只移除自己的结果/销毁回调。**宿主应预留53001–65000范围给本插件，其他插件不要使用此号段**；本插件不能控制任意宿主主动复用同一requestCode。达到本进程分配上限后明确失败，不回绕复用。\n\n取消、超时、宿主销毁后不会再把迟到结果报成成功；当前请求新增的持久授权按requestToken与persistedTime逐URI回滚，保留原有及其他请求的登记。已进入提供方I/O时，取消信号与清理可能稍后完成；不会承诺强制终止任意第三方Provider。逻辑取消不主动关闭外部DocumentsUI，调用方应等系统界面退出后再开启下一次选择。\n\n### 系统选择 → 有界导入 → 附件版本\n\n示例页依次提供这三个真实操作：\n\n1. 用户通过系统界面明确选择，读取返回首个item.uri。\n2. 将该URI放入原有`importWorkspaceFile`的sourceUri，并使用独立files/生成路径、maxBytes和可选expectedSha256；实际逐字节校验后提交目的文件。\n3. 将导入结果的私有相对path交给`commitAttachmentRevision`，明确attachmentId与expectedVersion。版本冲突先刷新，不自动覆盖。\n\n多选仅表示一次返回多个授权URI，不自动导入所有文件，也不自动请求网络上传。选择后可直接用原有sourceUri接口导入或提交附件；本插件不把元数据探测当字节哈希验证。\n\n### 系统选择错误码\n\n| code | 含义 |\n| --- | --- |\n| 9122101 | MIME、数量、大小、超时或其他参数范围无效 |\n| 9122102 | 本插件已有pending选择，或重复启动同一预留请求 |\n| 9122103 | Activity/应用Context不可用、宿主不在前台 |\n| 9122104 | 系统文档选择器启动/监听登记失败 |\n| 9122105 | 用户/调用方取消，或处理时请求已失效 |\n| 9122106 | 系统返回非成功码、空结果或没有URI |\n| 9122107 | 非content URI或实际MIME不符 |\n| 9122108 | 超过maxCount或原始候选上限 |\n| 9122109 | 提供方已知元数据大小超过maxBytes |\n| 9122110 | Provider读取、JSON解析或工作线程异常 |\n| 9122111 | 请求超时 |\n| 9122112 | 宿主Activity销毁 |\n| 9122113 | 本进程requestCode分配范围耗尽 |\n| 9122114 | 授权登记/释放失败，或URI未在本插件登记 |\n\n### 1.1系统选择器验收状态\n\n本版新增42条产品核心/provider检查已在Android真机全部通过，0失败、0跳过；同次统一Native APK另有相机23条、夹具自身13条，合计78/78。42条只计本插件新核心检查，另两组不当作本插件功能数。UTS静态预检通过；公开UTS与系统DocumentsUI选择由本轮集成验收另行记录。42条包含同UID真实Provider及路由/边界，不冒充系统界面选择或跨UID持久授权成功。上方1.0批次107/30不得计作本版新增系统选择器的通过数量。\n\n官方资料：[Android SAF](https://developer.android.com/training/data-storage/shared/documents-files)、[UTSAndroid结果及销毁监听](https://doc.dcloud.net.cn/uni-app-x/uts/utsandroid.html)。\n\n## 两个业务能力\n\n1. **文件交接可校验。** 流式拷贝时计算SHA256、限制最大字节；完整输入与期望哈希一致后，才在同一私有目录提交目的文件。失败不留下可被误认为完成的目标文件，不覆盖现有文件。\n2. **附件替换有版本。** 调用方提交`expectedVersion`；旧版本提交会被明确拒绝。每一新版本是独立文件，记录哈希、大小、时间、备注，保留既有版本。元数据在SQLite事务里提交。\n\n这不是通用上传器：没有网络分片续传、后台上传、审批账号系统或服务端签章。版本链可作为审批系统的输入，不把本地版本检查冒充“已获审批”。\n\n## 安装与演示\n\n本包置于`uni_modules/`。示例`example/uniappx/files-demo.uvue`提供真实系统单/多选、持久读授权开关、选择取消、有界导入、附件版本与授权登记管理。仅在点击后打开系统界面；导入/版本仅写`nexus-picker-demo`私有工作区，默认不保留持久权限。\n\n新版新增五个具名UTS入口，旧`NexusFileOptions`和九个API保留兼容。以下先说明新增系统选择；原有文件API在后文。\n\n```ts\nimport * as Files from '@/uni_modules/nexus-file-workflow'\nimport { NexusFileOptions } from '@/uni_modules/nexus-file-workflow'\n\nconst request = new UTSJSONObject()\nrequest['scope'] = 'account-A/order-0001'\nrequest['path'] = 'files/checklist.txt'\nrequest['text'] = '本轮工单附件'\nconst options: NexusFileOptions = {\n  request: request,\n  success: (res: UTSJSONObject): void => { console.log(JSON.stringify(res)) },\n  fail: (err: UTSJSONObject): void => { console.log(JSON.stringify(err)) }\n}\nFiles.writeWorkspaceText(options)\n```\n\n原有九个私有文件/附件函数仍使用同一个真实导出类型：\n\n```ts\nexport type NexusFileOptions = {\n  request: UTSJSONObject\n  success?: (res: UTSJSONObject) => void\n  fail?: (err: UTSJSONObject) => void\n  complete?: (res: UTSJSONObject) => void\n}\n```\n\n成功返回`{code:0,message:'ok',data:{...}}`；失败返回`{code:9122xxx,message:'...'}`，随后调用`complete`。工作线程串行处理，回调回主线程。\n\n## 原有文件与附件API\n\n除能力查询外，所有request须有`scope`（1–256字符），建议包含账号、工单和业务版本。scope使用SHA256派生目录名，**不是加密**。\n\n| 函数 | request字段 | data |\n| --- | --- | --- |\n| `openWorkspace` | `scope` | `workspaceId`,`private:true` |\n| `writeWorkspaceText` | `scope`,`path`：`files/`下新文件，`text` | `path`,`bytes`,`sha256` |\n| `readWorkspaceText` | `scope`,`path` | `text`,`file`元数据 |\n| `inspectWorkspaceFile` | `scope`,`path` | `path`,`bytes`,`sha256` |\n| `importWorkspaceFile` | `scope`,`path`：`files/`下新文件；`sourcePath`或`sourceUri`；可选`maxBytes`,`expectedSha256` | `path`,`bytes`,`sha256` |\n| `exportWorkspaceFile` | 同上，但目标`path`必须在`exports/` | `path`,`bytes`,`sha256` |\n| `commitAttachmentRevision` | `scope`,`attachmentId`,`expectedVersion`、输入源；可选`note`,`maxBytes`,`expectedSha256` | `attachmentId`,`version`,`file` |\n| `getAttachmentRevisions` | `scope`,`attachmentId` | `attachmentId`,`revisions`按版本升序 |\n| `getFileWorkflowCapabilities` | `{}` | 支持项及`networkUpload:false`,`systemFilePicker:true`,`managedPersistedReadGrants:true` |\n\n### 路径与输入源\n\n- scope是逻辑分区，不是对同一宿主代码的安全沙箱；宿主仍须验证账号授权。绝对sourcePath入口允许宿主明确交接其files/cache中的文件，因此不能仅靠scope阻止可信宿主主动跨区复制。\n- 工作区：宿主`files/nexus-files/<scope哈希>/`。相对路径只能在`files/`、`exports/`、`revisions/`三个子树。拒绝绝对输出路径、空段、`.`/`..`、反斜杠、NUL、冒号、点开头的段，以及canonical解析后越界的路径。\n- 新文件不覆盖既有文件。相对路径总长最多256，每段最多120字符。\n- `sourcePath`可以是工作区内相对文件；也可为**当前宿主**files/cache目录中的绝对文件。拒绝外部共享存储和系统路径直接读取。\n- `sourceUri`只接受`content://`，使用宿主已经拥有的授权读取；`importWorkspaceFile`本身不会索取或持久化授权，也不绕过授权。新增`chooseSystemFiles`可在用户选择后按实际返回flags主动请求持久读授权。URI和sourcePath均提供时优先URI。\n- 1.1提供`chooseSystemFiles`系统入口；也兼容宿主从其他合法选择器取得的URI。每次请求仅登记自己的UTS结果/销毁监听，并移除相同函数引用；不移除其他插件监听。\n- `maxBytes`默认16MiB，允许1字节至100MiB。流式计数超限立即失败，即使URI元数据误报长度也以实际读取为准。零字节文件允许。\n- `expectedSha256`可选；传入时须是64位十六进制并与实际字节匹配。这里检查字节一致性，不保证文件来源可信或内容合法。\n- 文本写入最多4MiB；文本读取最多1MiB，UTF-8解码。二进制文件请使用inspect/import/export，不把它传给readText。\n\n### 授权URI导入\n\n```json\n{\n  \"scope\": \"account-A/order-0001\",\n  \"sourceUri\": \"content://调用方已授权的provider/文档\",\n  \"path\": \"files/delivery-note.pdf\",\n  \"maxBytes\": 16777216,\n  \"expectedSha256\": \"可选64位SHA256\"\n}\n```\n\n不要把示例中的文字当实际URI；权限、用户选择与Provider可用性由宿主管理。读权限失效会返回文件操作失败，不偷偷改读其他路径。\n\n### 不可变附件版本\n\n```json\n{\n  \"scope\": \"account-A/order-0001\",\n  \"attachmentId\": \"delivery-note\",\n  \"expectedVersion\": 0,\n  \"sourcePath\": \"files/delivery-note.pdf\",\n  \"note\": \"首次提交\"\n}\n```\n\n- `attachmentId`为1–128个字母/数字/`_.-`且不能点开头。\n- 首次提交`expectedVersion:0`，返回`version:1`；下次必须传1。\n- 版本冲突返回`9122007`，宿主先刷新版本链，再让业务明确是否替换，不盲目覆盖。\n- `revisions`项包含`version/path/sha256/bytes/note/createdAt`。每版实际文件独立，通用写入/导入不能写到`revisions/`。只读路径可以用于后续导出。\n- 文件先完整写入，随后事务登记；应用在文件提交后、元数据登记前崩溃，可能留下未登记的孤立文件。已登记记录不会指向尚未完成的临时输入。没有自动垃圾回收或跨进程一致性保证。\n- 默认保留所有版本，不自动删除。宿主卸载/清数据会删除私有文件，业务须按自己的备份、保留期和权限策略管理。\n\n### 私有导出\n\n```json\n{ \"scope\":\"account-A/order-0001\", \"sourcePath\":\"files/delivery-note.pdf\", \"path\":\"exports/delivery-note-v1.pdf\" }\n```\n\n导出仍在当前宿主私有目录，不等于写入公共下载目录或已分享给其他App。对外分享可使用宿主已有FileProvider/分享模块，明确授权目标后进行。\n\n## 错误码\n\n| code | 含义 |\n| --- | --- |\n| 9122001 | 参数、路径或类型不合法 |\n| 9122002 | 原生I/O或元数据操作失败 |\n| 9122003 | 输入/文件不存在或无法打开 |\n| 9122004 | 目的文件已存在 |\n| 9122005 | 实际输入字节超限 |\n| 9122006 | SHA256不匹配 |\n| 9122007 | 附件版本冲突 |\n| 9122008 | 宿主Context不可用 |\n\n## 验收与限制\n\n应以真实Android检查完整UTF8/控制字节、SHA256、超限与错误哈希不留目标、越界路径拒绝、版本冲突与历史内容不变。已授权URI导入需另测实际Provider、授权回收和进程重启；内部测试Provider不等于所有系统选择器/跨UID权限验收。\n\n使用Android平台文件、SQLite及[AtomicFile](https://developer.android.com/reference/android/util/AtomicFile)；无第三方运行时依赖。私有目录边界不等于内容加密；业务文件可能含敏感信息，宿主负责账号授权、系统备份和留存策略。插件本身不联网。\n\n普通授权¥29.90、源码授权¥299（延续既有已生效定价）；实际版本与购买价以市场按钮为准，免费试用为平台独立入口。\n",
+      "docUrl": "docs/nexus-file-workflow.md",
+      "cover": "assets/covers/nexus-file-workflow.png",
+      "screens": [
+        {
+          "src": "assets/screens/nexus-file-workflow-wave-0.png",
+          "label": "1.1版Android真实演示页 · 尚未选择文件",
+          "kind": "operation",
+          "version": "本轮Android实机画面"
+        },
+        {
+          "src": "assets/screens/nexus-file-workflow-wave-1.png",
+          "label": "本轮Android实机 · 附件版本工作流演示",
+          "kind": "operation",
+          "version": "本轮Android实机画面"
+        }
+      ],
+      "wave10": true,
+      "platforms": {
+        "android": "√",
+        "ios": "x",
+        "harmony": "x"
+      },
+      "verification": "1.1新增选择器Native42条已在Android14通过；系统界面已真实打开，单/多选及取消的人工作业进行中，尚不声明跨UID选择验收完成。旧版本记录见README。",
+      "hasLocalDoc": true,
+      "externalOnly": false
+    },
+    {
+      "id": "nexus-sqlite-core",
+      "number": 4,
       "name": "Nexus 本地数据库与离线队列",
       "shortName": "本地数据库与离线队列",
       "category": "数据与文件",
@@ -85,45 +165,8 @@
       "externalOnly": false
     },
     {
-      "id": "nexus-file-workflow",
-      "number": 3,
-      "name": "Nexus 文件与附件工作流",
-      "shortName": "文件与附件工作流",
-      "category": "数据与文件",
-      "kicker": "FILES",
-      "purpose": "附件导入与版本交接",
-      "description": "Android 私有文件工作区、已授权URI导入、SHA256校验与不可变附件版本链。",
-      "version": "1.0.0",
-      "publishedVersion": "1.0.0",
-      "marketCheckedAt": "2026-11-06T22:04:46.019893+08:00",
-      "state": "published",
-      "stateLabel": "已上架",
-      "marketUrl": "https://ext.dcloud.net.cn/plugin?name=nexus-file-workflow",
-      "author": "Nexus Wang",
-      "readme": "# Nexus 文件与附件工作流\n\n<!-- NEXUS:WAVE10:VERIFICATION:START -->\n## 本轮验收记录（2026-11-06）\n\n本插件属于本轮2款新增、8款升级的交付。整批10项已在同一台Android14手机的统一Native复验APK中完成：数据38条、工业扫码/标签28条、文档图像15条、媒体26条，合计107条全部通过，0失败、0跳过；公开UTS新增链路另有30条真实回归通过。**这些是整批不同层次的检查数，不是本插件107个功能，也不能相加称为137个独立功能。** 本插件只对应其中相关检查，测试不替代全功能、全机型或长期稳定性验收。\n\n新增能力以Android uni-app x为本轮验证范围；普通uni-app及旧平台支持见各API说明。iOS/Harmony/Web不因本轮Android测试获得新增支持声明。实体PDA、DPM工件、BLE外设与纸张输出、完整Office排版、系统选择器所有跨UID/授权回收路径均不在本轮通过范围内。\n\n本轮新增截图为数据库、文件工作流和工业扫码业务页的真实whole-page页面快照，已人工查看；它们不含系统栏，也不证明相机现场ROI或其他插件所有按钮均已人工验收。\n<!-- NEXUS:WAVE10:VERIFICATION:END -->\n\n\n作者：**Nexus Wang** · 插件ID：`nexus-file-workflow` · 版本：1.0.0\n\n面向工业工单、盘点证据与文档交接的Android私有文件模块：已授权URI导入、限额拷贝、SHA256校验、私有导出，以及带乐观并发检查的不可变附件版本链。只处理调用方明确传入的文件，不扫描照片、通讯录或系统目录，不自动联网。\n\n**支持：Android uni-app x，最低API 23。** 本轮未提供iOS、Harmony、Web、小程序和普通uni-app适配。HBuilderX建议5.07及以上；构建与真机结果以交付验收报告为准。\n\n## 两个业务能力\n\n1. **文件交接可校验。** 流式拷贝时计算SHA256、限制最大字节；完整输入与期望哈希一致后，才在同一私有目录提交目的文件。失败不留下可被误认为完成的目标文件，不覆盖现有文件。\n2. **附件替换有版本。** 调用方提交`expectedVersion`；旧版本提交会被明确拒绝。每一新版本是独立文件，记录哈希、大小、时间、备注，保留既有版本。元数据在SQLite事务里提交。\n\n这不是通用上传器：没有网络分片续传、后台上传、审批账号系统或服务端签章。版本链可作为审批系统的输入，不把本地版本检查冒充“已获审批”。\n\n## 安装与演示\n\n本包置于`uni_modules/`。示例`example/uniappx/files-demo.uvue`仅操作`demo-account`下自建文本，可查看哈希、提交版本和私有导出。\n\n```ts\nimport * as Files from '@/uni_modules/nexus-file-workflow'\nimport { NexusFileOptions } from '@/uni_modules/nexus-file-workflow'\n\nconst request = new UTSJSONObject()\nrequest['scope'] = 'account-A/order-0001'\nrequest['path'] = 'files/checklist.txt'\nrequest['text'] = '本轮工单附件'\nconst options: NexusFileOptions = {\n  request: request,\n  success: (res: UTSJSONObject): void => { console.log(JSON.stringify(res)) },\n  fail: (err: UTSJSONObject): void => { console.log(JSON.stringify(err)) }\n}\nFiles.writeWorkspaceText(options)\n```\n\n所有函数参数均为同一个真实导出类型：\n\n```ts\nexport type NexusFileOptions = {\n  request: UTSJSONObject\n  success?: (res: UTSJSONObject) => void\n  fail?: (err: UTSJSONObject) => void\n  complete?: (res: UTSJSONObject) => void\n}\n```\n\n成功返回`{code:0,message:'ok',data:{...}}`；失败返回`{code:9122xxx,message:'...'}`，随后调用`complete`。工作线程串行处理，回调回主线程。\n\n## API\n\n除能力查询外，所有request须有`scope`（1–256字符），建议包含账号、工单和业务版本。scope使用SHA256派生目录名，**不是加密**。\n\n| 函数 | request字段 | data |\n| --- | --- | --- |\n| `openWorkspace` | `scope` | `workspaceId`,`private:true` |\n| `writeWorkspaceText` | `scope`,`path`：`files/`下新文件，`text` | `path`,`bytes`,`sha256` |\n| `readWorkspaceText` | `scope`,`path` | `text`,`file`元数据 |\n| `inspectWorkspaceFile` | `scope`,`path` | `path`,`bytes`,`sha256` |\n| `importWorkspaceFile` | `scope`,`path`：`files/`下新文件；`sourcePath`或`sourceUri`；可选`maxBytes`,`expectedSha256` | `path`,`bytes`,`sha256` |\n| `exportWorkspaceFile` | 同上，但目标`path`必须在`exports/` | `path`,`bytes`,`sha256` |\n| `commitAttachmentRevision` | `scope`,`attachmentId`,`expectedVersion`、输入源；可选`note`,`maxBytes`,`expectedSha256` | `attachmentId`,`version`,`file` |\n| `getAttachmentRevisions` | `scope`,`attachmentId` | `attachmentId`,`revisions`按版本升序 |\n| `getFileWorkflowCapabilities` | `{}` | 支持项及`networkUpload:false`,`systemFilePicker:false` |\n\n### 路径与输入源\n\n- scope是逻辑分区，不是对同一宿主代码的安全沙箱；宿主仍须验证账号授权。绝对sourcePath入口允许宿主明确交接其files/cache中的文件，因此不能仅靠scope阻止可信宿主主动跨区复制。\n- 工作区：宿主`files/nexus-files/<scope哈希>/`。相对路径只能在`files/`、`exports/`、`revisions/`三个子树。拒绝绝对输出路径、空段、`.`/`..`、反斜杠、NUL、冒号、点开头的段，以及canonical解析后越界的路径。\n- 新文件不覆盖既有文件。相对路径总长最多256，每段最多120字符。\n- `sourcePath`可以是工作区内相对文件；也可为**当前宿主**files/cache目录中的绝对文件。拒绝外部共享存储和系统路径直接读取。\n- `sourceUri`只接受`content://`，使用宿主已经拥有的授权读取；不会主动索取权限，不会绕过授权，不帮宿主持久化URI权限。URI和sourcePath均提供时优先URI。\n- 不内置系统选择器。宿主应先通过自己已集成的SAF/文件选择功能让用户明确选择，获得URI及有效授权，再调用本插件。避免抢占其他插件的Activity结果监听。\n- `maxBytes`默认16MiB，允许1字节至100MiB。流式计数超限立即失败，即使URI元数据误报长度也以实际读取为准。零字节文件允许。\n- `expectedSha256`可选；传入时须是64位十六进制并与实际字节匹配。这里检查字节一致性，不保证文件来源可信或内容合法。\n- 文本写入最多4MiB；文本读取最多1MiB，UTF-8解码。二进制文件请使用inspect/import/export，不把它传给readText。\n\n### 授权URI导入\n\n```json\n{\n  \"scope\": \"account-A/order-0001\",\n  \"sourceUri\": \"content://调用方已授权的provider/文档\",\n  \"path\": \"files/delivery-note.pdf\",\n  \"maxBytes\": 16777216,\n  \"expectedSha256\": \"可选64位SHA256\"\n}\n```\n\n不要把示例中的文字当实际URI；权限、用户选择与Provider可用性由宿主管理。读权限失效会返回文件操作失败，不偷偷改读其他路径。\n\n### 不可变附件版本\n\n```json\n{\n  \"scope\": \"account-A/order-0001\",\n  \"attachmentId\": \"delivery-note\",\n  \"expectedVersion\": 0,\n  \"sourcePath\": \"files/delivery-note.pdf\",\n  \"note\": \"首次提交\"\n}\n```\n\n- `attachmentId`为1–128个字母/数字/`_.-`且不能点开头。\n- 首次提交`expectedVersion:0`，返回`version:1`；下次必须传1。\n- 版本冲突返回`9122007`，宿主先刷新版本链，再让业务明确是否替换，不盲目覆盖。\n- `revisions`项包含`version/path/sha256/bytes/note/createdAt`。每版实际文件独立，通用写入/导入不能写到`revisions/`。只读路径可以用于后续导出。\n- 文件先完整写入，随后事务登记；应用在文件提交后、元数据登记前崩溃，可能留下未登记的孤立文件。已登记记录不会指向尚未完成的临时输入。没有自动垃圾回收或跨进程一致性保证。\n- 默认保留所有版本，不自动删除。宿主卸载/清数据会删除私有文件，业务须按自己的备份、保留期和权限策略管理。\n\n### 私有导出\n\n```json\n{ \"scope\":\"account-A/order-0001\", \"sourcePath\":\"files/delivery-note.pdf\", \"path\":\"exports/delivery-note-v1.pdf\" }\n```\n\n导出仍在当前宿主私有目录，不等于写入公共下载目录或已分享给其他App。对外分享可使用宿主已有FileProvider/分享模块，明确授权目标后进行。\n\n## 错误码\n\n| code | 含义 |\n| --- | --- |\n| 9122001 | 参数、路径或类型不合法 |\n| 9122002 | 原生I/O或元数据操作失败 |\n| 9122003 | 输入/文件不存在或无法打开 |\n| 9122004 | 目的文件已存在 |\n| 9122005 | 实际输入字节超限 |\n| 9122006 | SHA256不匹配 |\n| 9122007 | 附件版本冲突 |\n| 9122008 | 宿主Context不可用 |\n\n## 验收与限制\n\n应以真实Android检查完整UTF8/控制字节、SHA256、超限与错误哈希不留目标、越界路径拒绝、版本冲突与历史内容不变。已授权URI导入需另测实际Provider、授权回收和进程重启；内部测试Provider不等于所有系统选择器/跨UID权限验收。\n\n使用Android平台文件、SQLite及[AtomicFile](https://developer.android.com/reference/android/util/AtomicFile)；无第三方运行时依赖。私有目录边界不等于内容加密；业务文件可能含敏感信息，宿主负责账号授权、系统备份和留存策略。插件本身不联网。\n\n目标普通授权¥29.90、源码授权¥299；是否已上架及实际价格以市场购买按钮为准，免费试用为平台独立入口。\n",
-      "docUrl": "docs/nexus-file-workflow.md",
-      "cover": "assets/covers/nexus-file-workflow.png",
-      "screens": [
-        {
-          "src": "assets/screens/nexus-file-workflow-wave-0.png",
-          "label": "本轮Android实机 · 附件版本工作流演示",
-          "kind": "operation",
-          "version": "本轮Android实机画面"
-        }
-      ],
-      "wave10": true,
-      "platforms": {
-        "android": "√",
-        "ios": "x",
-        "harmony": "x"
-      },
-      "verification": "本轮10项联合回归合计：Android原生107/107、公开UTS30/30通过；扫码另有4项相机断言。每款覆盖和未测平台/外设见README。截图标签区分本轮实际操作与第一轮默认演示页，不能据此推断全部新增功能画面均已收录。",
-      "hasLocalDoc": true,
-      "externalOnly": false
-    },
-    {
       "id": "aiko-ble-core",
-      "number": 4,
+      "number": 5,
       "name": "Nexus BLE 与打印指令",
       "shortName": "BLE 与打印指令",
       "category": "工业与设备",
@@ -160,7 +203,7 @@
     },
     {
       "id": "aiko-doc-scan",
-      "number": 5,
+      "number": 6,
       "name": "Nexus 文档扫描矫正",
       "shortName": "文档扫描矫正",
       "category": "文档与图像",
@@ -197,7 +240,7 @@
     },
     {
       "id": "aiko-doc-viewer",
-      "number": 6,
+      "number": 7,
       "name": "Nexus 文档阅读器",
       "shortName": "文档阅读器",
       "category": "文档与图像",
@@ -239,7 +282,7 @@
     },
     {
       "id": "aiko-image-edit",
-      "number": 7,
+      "number": 8,
       "name": "Nexus 图片编辑",
       "shortName": "图片编辑",
       "category": "文档与图像",
@@ -276,7 +319,7 @@
     },
     {
       "id": "aiko-gallery-hub",
-      "number": 8,
+      "number": 9,
       "name": "Nexus 相册媒体中心",
       "shortName": "相册媒体中心",
       "category": "多媒体",
@@ -313,7 +356,7 @@
     },
     {
       "id": "aiko-video-edit",
-      "number": 9,
+      "number": 10,
       "name": "Nexus 视频编辑",
       "shortName": "视频编辑",
       "category": "多媒体",
@@ -355,7 +398,7 @@
     },
     {
       "id": "aiko-video-thumb",
-      "number": 10,
+      "number": 11,
       "name": "Nexus 视频封面取帧",
       "shortName": "视频封面取帧",
       "category": "多媒体",
@@ -397,7 +440,7 @@
     },
     {
       "id": "aiko-bg-audio",
-      "number": 11,
+      "number": 12,
       "name": "Nexus 背景音频播放",
       "shortName": "背景音频播放",
       "category": "音频与语音",
@@ -427,7 +470,7 @@
     },
     {
       "id": "aiko-smart-tts",
-      "number": 12,
+      "number": 13,
       "name": "Nexus 系统语音播报",
       "shortName": "系统语音播报",
       "category": "音频与语音",
@@ -464,7 +507,7 @@
     },
     {
       "id": "aiko-asr",
-      "number": 13,
+      "number": 14,
       "name": "Nexus 系统语音识别",
       "shortName": "系统语音识别",
       "category": "音频与语音",
@@ -501,7 +544,7 @@
     },
     {
       "id": "aiko-call-recorder",
-      "number": 14,
+      "number": 15,
       "name": "Nexus 系统录音与转码",
       "shortName": "系统录音与转码",
       "category": "音频与语音",
@@ -538,7 +581,7 @@
     },
     {
       "id": "aiko-live-player",
-      "number": 15,
+      "number": 16,
       "name": "Nexus 原生流媒体播放",
       "shortName": "原生流媒体播放",
       "category": "多媒体",
@@ -575,7 +618,7 @@
     },
     {
       "id": "aiko-cast-core",
-      "number": 16,
+      "number": 17,
       "name": "Nexus DLNA 投屏",
       "shortName": "DLNA 投屏",
       "category": "多媒体",
@@ -612,7 +655,7 @@
     },
     {
       "id": "aiko-share-core",
-      "number": 17,
+      "number": 18,
       "name": "Nexus 系统分享",
       "shortName": "系统分享",
       "category": "数据与文件",
@@ -649,7 +692,7 @@
     },
     {
       "id": "aiko-geo-core",
-      "number": 18,
+      "number": 19,
       "name": "Nexus 原生定位",
       "shortName": "原生定位",
       "category": "系统与业务",
@@ -686,7 +729,7 @@
     },
     {
       "id": "aiko-device-id",
-      "number": 19,
+      "number": 20,
       "name": "Nexus 设备标识",
       "shortName": "设备标识",
       "category": "系统与业务",
@@ -723,7 +766,7 @@
     },
     {
       "id": "aiko-keep-alive",
-      "number": 20,
+      "number": 21,
       "name": "Nexus 应用保活",
       "shortName": "应用保活",
       "category": "系统与业务",
@@ -760,7 +803,7 @@
     },
     {
       "id": "aiko-float-window",
-      "number": 21,
+      "number": 22,
       "name": "Nexus 全局浮窗",
       "shortName": "全局浮窗",
       "category": "系统与业务",
@@ -797,7 +840,7 @@
     },
     {
       "id": "aiko-alipay-core",
-      "number": 22,
+      "number": 23,
       "name": "Nexus 支付宝桥接",
       "shortName": "支付宝桥接",
       "category": "系统与业务",
@@ -834,7 +877,7 @@
     },
     {
       "id": "aiko-wechat-core",
-      "number": 23,
+      "number": 24,
       "name": "Nexus 微信诊断与分享",
       "shortName": "微信诊断与分享",
       "category": "系统与业务",
@@ -871,7 +914,7 @@
     },
     {
       "id": "aikit",
-      "number": 24,
+      "number": 25,
       "name": "AIKit",
       "shortName": "AIKit",
       "category": "市场组件",
@@ -897,7 +940,7 @@
     },
     {
       "id": "365dailycard",
-      "number": 25,
+      "number": 26,
       "name": "365DailyCard",
       "shortName": "365DailyCard",
       "category": "市场组件",
@@ -924,9 +967,9 @@
   ],
   "categories": [
     "工业与设备",
+    "多媒体",
     "数据与文件",
     "文档与图像",
-    "多媒体",
     "音频与语音",
     "系统与业务",
     "市场组件"
