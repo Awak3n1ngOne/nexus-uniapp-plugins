@@ -108,7 +108,7 @@ def readme_cover_wall(items, live):
         links.append(f'<a href="{html.escape(detail,quote=True)}">在线详情</a>')
         if item['marketUrl']:links.append(f'<a href="{html.escape(item["marketUrl"],quote=True)}">插件市场</a>')
         note=('市场原始主封面 · 保留原品牌' if item.get('coverOrigin')=='official-market' else '市场条目 · 目录占位封面') if item['externalOnly'] else item['stateLabel']
-        cells.append(f'<td width="33%" valign="top"><a href="{html.escape(main,quote=True)}"><img src="{cover}" alt="{title}封面" width="360"></a><br><strong>{title}</strong><br><sub>{html.escape(note)}</sub><br>'+ ' · '.join(links)+'</td>')
+        cells.append(f'<td width="33%" valign="top"><a href="{html.escape(main,quote=True)}"><img src="{cover}" alt="{title}封面" width="250"></a><br><strong>{title}</strong><br><sub>{html.escape(note)}</sub><br>'+ ' · '.join(links)+'</td>')
     rows=[]
     for start in range(0,len(cells),3):
         row=cells[start:start+3];row+=['<td></td>']*(3-len(row));rows.append('<tr>\n'+'\n'.join(row)+'\n</tr>')
