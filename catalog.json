@@ -1,7 +1,7 @@
 {
   "brand": "Nexus Wang",
   "title": "Nexus Plugin Atlas",
-  "updatedAt": "2026-11-06T21:54:13.067223+08:00",
+  "updatedAt": "2026-11-06T21:56:50.584836+08:00",
   "githubUrl": "https://github.com/Awak3n1ngOne/nexus-uniapp-plugins",
   "plugins": [
     {
@@ -886,7 +886,8 @@
       "author": "Nexus Wang",
       "readme": "",
       "docUrl": null,
-      "cover": "assets/covers/aikit.svg",
+      "cover": "assets/covers/aikit.webp",
+      "coverOrigin": "official-market",
       "screens": [],
       "wave10": false,
       "platforms": {},
@@ -911,7 +912,8 @@
       "author": "Nexus Wang",
       "readme": "",
       "docUrl": null,
-      "cover": "assets/covers/365dailycard.svg",
+      "cover": "assets/covers/365dailycard.gif",
+      "coverOrigin": "official-market",
       "screens": [],
       "wave10": false,
       "platforms": {},

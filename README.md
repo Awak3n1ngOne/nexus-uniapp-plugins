@@ -10,7 +10,7 @@ Nexus Wang 的 uni-app 插件公开文档集合与画廊。
 
 ## 全部插件 · 封面画廊
 
-点击封面或说明链接阅读文档。封面是品牌展示图，实机截图请进入在线画廊；AIKit与365DailyCard为市场外链条目，使用明确标注的目录占位封面。新开发插件尚未上架时不提供虚构的市场入口。
+点击封面或说明链接阅读文档。封面是品牌展示图，实机截图请进入在线画廊；AIKit与365DailyCard采用其官方市场原始主封面，保留原品牌，来源与SHA256见market-cover-sources.json。新开发插件尚未上架时不提供虚构的市场入口。
 
 <table>
 <tr>
@@ -51,10 +51,10 @@ Nexus Wang 的 uni-app 插件公开文档集合与画廊。
 <tr>
 <td width="33%" valign="top"><a href="docs/aiko-alipay-core.md"><img src="assets/covers/aiko-alipay-core.png" alt="Nexus 支付宝桥接封面" width="360"></a><br><strong>Nexus 支付宝桥接</strong><br><sub>已上架</sub><br><a href="docs/aiko-alipay-core.md">说明文档</a> · <a href="https://awak3n1ngone.github.io/nexus-uniapp-plugins/#plugin=aiko-alipay-core">在线详情</a> · <a href="https://ext.dcloud.net.cn/plugin?name=aiko-alipay-core">插件市场</a></td>
 <td width="33%" valign="top"><a href="docs/aiko-wechat-core.md"><img src="assets/covers/aiko-wechat-core.png" alt="Nexus 微信诊断与分享封面" width="360"></a><br><strong>Nexus 微信诊断与分享</strong><br><sub>已上架</sub><br><a href="docs/aiko-wechat-core.md">说明文档</a> · <a href="https://awak3n1ngone.github.io/nexus-uniapp-plugins/#plugin=aiko-wechat-core">在线详情</a> · <a href="https://ext.dcloud.net.cn/plugin?name=aiko-wechat-core">插件市场</a></td>
-<td width="33%" valign="top"><a href="https://ext.dcloud.net.cn/plugin?id=28709"><img src="assets/covers/aikit.svg" alt="AIKit封面" width="360"></a><br><strong>AIKit</strong><br><sub>市场条目 · 目录占位封面</sub><br><a href="https://awak3n1ngone.github.io/nexus-uniapp-plugins/#plugin=aikit">在线详情</a> · <a href="https://ext.dcloud.net.cn/plugin?id=28709">插件市场</a></td>
+<td width="33%" valign="top"><a href="https://ext.dcloud.net.cn/plugin?id=28709"><img src="assets/covers/aikit.webp" alt="AIKit封面" width="360"></a><br><strong>AIKit</strong><br><sub>市场原始主封面 · 保留原品牌</sub><br><a href="https://awak3n1ngone.github.io/nexus-uniapp-plugins/#plugin=aikit">在线详情</a> · <a href="https://ext.dcloud.net.cn/plugin?id=28709">插件市场</a></td>
 </tr>
 <tr>
-<td width="33%" valign="top"><a href="https://ext.dcloud.net.cn/plugin?id=22200"><img src="assets/covers/365dailycard.svg" alt="365DailyCard封面" width="360"></a><br><strong>365DailyCard</strong><br><sub>市场条目 · 目录占位封面</sub><br><a href="https://awak3n1ngone.github.io/nexus-uniapp-plugins/#plugin=365dailycard">在线详情</a> · <a href="https://ext.dcloud.net.cn/plugin?id=22200">插件市场</a></td>
+<td width="33%" valign="top"><a href="https://ext.dcloud.net.cn/plugin?id=22200"><img src="assets/covers/365dailycard.gif" alt="365DailyCard封面" width="360"></a><br><strong>365DailyCard</strong><br><sub>市场原始主封面 · 保留原品牌</sub><br><a href="https://awak3n1ngone.github.io/nexus-uniapp-plugins/#plugin=365dailycard">在线详情</a> · <a href="https://ext.dcloud.net.cn/plugin?id=22200">插件市场</a></td>
 <td></td>
 <td></td>
 </tr>

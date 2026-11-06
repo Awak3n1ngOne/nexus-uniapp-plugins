@@ -1,0 +1,24 @@
+{
+  "aikit": {
+    "pageUrl": "https://ext.dcloud.net.cn/plugin?id=28709",
+    "imageUrl": "https://img-cdn-tx.dcloud.net.cn/stream/plugin_screens/a746e730-7cf8-11f1-a480-7374bd07e9ec_0.png/webp?&v=1793969344",
+    "asset": "assets/covers/aikit.webp",
+    "sha256": "b839d56469d239922be33ec85b4782a239c4b18ac76d0d1f3fe691422d281cc8",
+    "bytes": 50850,
+    "contentType": "image/webp",
+    "pageSha256": "e771f35a4e4b42c13939ab22d0253874b4400def098d72116e33fd8aaad7349d",
+    "checkedAt": "2026-11-06T21:56:16.530034+08:00",
+    "selection": "First actual published plugin_screens image in official product gallery (slot 0)"
+  },
+  "365dailycard": {
+    "pageUrl": "https://ext.dcloud.net.cn/plugin?id=22200",
+    "imageUrl": "https://img-cdn-tx.dcloud.net.cn/stream/plugin_screens/6acc7f30-ebd9-11ef-96f2-61d2a6924ed8_0.gif?&v=1739706013",
+    "asset": "assets/covers/365dailycard.gif",
+    "sha256": "9705695147aa25d4ddbe763a83a14a3872c5c0da4277fab7dfe9ef5af32e83a1",
+    "bytes": 750583,
+    "contentType": "image/gif",
+    "pageSha256": "a32621950d82a86690d7e0f8d65613b0fb7baf5d9ed196038a3712a07920e098",
+    "checkedAt": "2026-11-06T21:56:20.092599+08:00",
+    "selection": "First actual published plugin_screens image in official product gallery (slot 0)"
+  }
+}

@@ -178,7 +178,7 @@ function openPlugin(id, updateHash = true) {
   for (const text of statuses) $('detailMeta').append(element('span', /待发布|尚未上架|开发/.test(text) ? 'attention' : '', text));
   const market = $('detailMarketTop'); const marketSafe = safeUrl(plugin.marketUrl);
   market.hidden = !marketSafe; if (marketSafe) market.href = marketSafe; else market.removeAttribute('href');
-  $('detailGallery').replaceChildren(imageButton({ src: plugin.cover, label: '品牌封面 · 非实际操作截图' }, plugin, false));
+  $('detailGallery').replaceChildren(imageButton({ src: plugin.cover, label: plugin.coverOrigin === 'official-market' ? '官方市场原始主封面 · 保留原品牌' : '品牌封面 · 非实际操作截图' }, plugin, false));
   for (const screenshot of plugin.screens) $('detailGallery').append(imageButton(screenshot, plugin, true));
   $('detailVerification').textContent = plugin.verification + (plugin.marketCheckedAt ? ` 市场版本核对时间：${plugin.marketCheckedAt.slice(0, 16).replace('T', ' ')}（北京时间）。` : '') + (plugin.id === 'aiko-bg-audio' ? ' 背景音频由独立任务维护，本轮不修改其源码。' : '');
   $('detailActions').replaceChildren();
@@ -238,9 +238,9 @@ function renderGrid() {
     const item = element('article', 'plugin-item');
     const hasRuntime = state.galleryMode === 'runtime' && plugin.screens.length > 0;
     const image = hasRuntime ? plugin.screens[0].src : plugin.cover;
-    const art = element('button', `plugin-art-button${hasRuntime ? ' runtime' : ''}`); art.type = 'button'; art.setAttribute('aria-label', `查看${plugin.name}的文档与画廊`);
+    const art = element('button', `plugin-art-button${hasRuntime ? ' runtime' : ''}${plugin.coverOrigin === 'official-market' && !hasRuntime ? ' market-cover' : ''}`); art.type = 'button'; art.setAttribute('aria-label', `查看${plugin.name}的文档与画廊`);
     art.append(artImage(image, `${plugin.name} — ${hasRuntime ? plugin.screens[0].label : '品牌封面'}`));
-    const label = hasRuntime ? (plugin.screens[0].kind === 'operation' ? 'ANDROID / 本轮实际操作' : 'ANDROID / 实机演示页') : (state.galleryMode === 'runtime' ? '未收录实机图 · 当前为品牌封面' : 'COVER / 品牌封面');
+    const label = hasRuntime ? (plugin.screens[0].kind === 'operation' ? 'ANDROID / 本轮实际操作' : 'ANDROID / 实机演示页') : (state.galleryMode === 'runtime' ? '未收录实机图 · 当前为封面' : (plugin.coverOrigin === 'official-market' ? 'COVER / 官方市场原始主封面' : 'COVER / 品牌封面'));
     art.append(element('span', `art-label${hasRuntime ? '' : ' is-cover'}`, label), element('span', 'art-arrow', '↗'));
     art.addEventListener('click', () => openPlugin(plugin.id)); item.append(art);
     const eyebrow = element('div', 'item-eyebrow'); eyebrow.append(element('span', '', `${plugin.kicker} / ${plugin.category}`), element('span', '', plugin.wave10 ? 'WAVE 02 / 本轮开发' : (plugin.externalOnly ? 'MARKET ENTRY' : 'NEXUS SERIES'))); item.append(eyebrow);

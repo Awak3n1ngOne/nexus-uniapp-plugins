@@ -51,6 +51,7 @@ def editorial_cover(pid,name,kicker,number):
     svg=f'''<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900"><rect width="1600" height="900" fill="#F2F0E8"/><rect x="64" y="64" width="76" height="76" rx="22" fill="#DEF04B"/><text x="80" y="120" font-family="Georgia,serif" font-size="60" font-weight="700" fill="#12100D">n.</text><text x="164" y="114" font-family="sans-serif" font-size="25" font-weight="700" fill="#12100D">NEXUS / PLUGIN ATLAS</text><text x="64" y="255" font-family="sans-serif" font-size="25" fill="#858779">{kicker}</text><text x="64" y="390" font-family="sans-serif" font-size="66" font-weight="900" fill="#12100D">{label}</text><text x="64" y="462" font-family="sans-serif" font-size="24" fill="#858779">ANDROID / UNI-APP X</text><path d="M64 660H770" stroke="#CACDBD"/><text x="64" y="708" font-family="sans-serif" font-size="18" fill="#858779">BY NEXUS WANG</text><rect x="930" y="64" width="606" height="772" rx="46" fill="#12160E"/><text x="972" y="121" font-family="sans-serif" font-size="18" fill="#BBC0AF">NEXUS / LOCAL DEVELOPMENT</text><text x="972" y="410" font-family="Georgia,serif" font-size="190" fill="#DEF04B">{number:02d}</text><path d="M972 495H1494M972 520H1380M972 545H1440" stroke="#62684E"/><text x="972" y="715" font-family="sans-serif" font-size="29" fill="#F2F0E8">让能力，进入应用。</text><text x="972" y="770" font-family="sans-serif" font-size="17" fill="#BBC0AF">封面设计 · 非实际操作截图</text></svg>'''
     target=f'assets/covers/{pid}.svg';(HERE/target).write_text(svg);manifest.append({'path':target,'sha256':hashlib.sha256(svg.encode()).hexdigest()});return target
 
+market_covers=read_json(HERE/'market-cover-sources.json',{})
 plugins=[]
 for index,pid in enumerate(order,1):
     d=source/pid
@@ -85,8 +86,13 @@ for index,pid in enumerate(order,1):
     verified=ov.get('verification','真实演示页已收录；具体功能验收与限制见README。' if screens else '本目录未收录此插件真实运行截图；支持和测试范围见README。')
     plugins.append({'id':pid,'number':index,'name':name,'shortName':name.replace('Nexus ',''),'category':cat,'kicker':short,'purpose':purpose,'description':p.get('description',''),'version':version,'publishedVersion':published,'marketCheckedAt':ov.get('checkedAt',market.get('checkedAt')),'state':state,'stateLabel':stateLabel,'marketUrl':marketurl,'author':p.get('author','Nexus Wang'),'readme':readme,'docUrl':f'docs/{pid}.md','cover':cover,'screens':screens,'wave10':pid in wave,'platforms':platforms,'verification':verified,'hasLocalDoc':bool(readme),'externalOnly':False})
 for pid,name,num,desc in [('aikit','AIKit',28709,'市场组件条目。本地未收录对应源码和说明，请在官方插件市场查看功能、版本与支持平台。'),('365dailycard','365DailyCard',22200,'市场组件条目。本地未收录对应源码和说明，请在官方插件市场查看功能、版本与支持平台。')]:
-    idx=len(plugins)+1;cover=editorial_cover(pid,name,'MARKET ENTRY',idx)
-    plugins.append({'id':pid,'number':idx,'name':name,'shortName':name,'category':'市场组件','kicker':'COMPONENT','purpose':'官方市场条目','description':desc,'version':None,'publishedVersion':None,'state':'external','stateLabel':'市场外链 · 文档未收录','marketUrl':f'https://ext.dcloud.net.cn/plugin?id={num}','author':'Nexus Wang','readme':'','docUrl':None,'cover':cover,'screens':[],'wave10':False,'platforms':{},'verification':'没有本地文档或本任务真实截图；请核对市场页。','hasLocalDoc':False,'externalOnly':True})
+    idx=len(plugins)+1;record=market_covers.get(pid,{})
+    candidate=record.get('asset','');cover_path=HERE/candidate
+    actual_cover=bool(candidate.startswith('assets/covers/') and '..' not in Path(candidate).parts and cover_path.is_file() and hashlib.sha256(cover_path.read_bytes()).hexdigest()==record.get('sha256'))
+    if actual_cover:
+        cover=candidate;manifest.append({'path':cover,'sha256':record['sha256'],'pageUrl':record['pageUrl'],'imageUrl':record['imageUrl']})
+    else:cover=editorial_cover(pid,name,'MARKET ENTRY',idx)
+    plugins.append({'id':pid,'number':idx,'name':name,'shortName':name,'category':'市场组件','kicker':'COMPONENT','purpose':'官方市场条目','description':desc,'version':None,'publishedVersion':None,'state':'external','stateLabel':'市场外链 · 文档未收录','marketUrl':f'https://ext.dcloud.net.cn/plugin?id={num}','author':'Nexus Wang','readme':'','docUrl':None,'cover':cover,'coverOrigin':'official-market' if actual_cover else 'placeholder','screens':[],'wave10':False,'platforms':{},'verification':'没有本地文档或本任务真实截图；请核对市场页。','hasLocalDoc':False,'externalOnly':True})
 data={'brand':'Nexus Wang','title':'Nexus Plugin Atlas','updatedAt':datetime.now().astimezone().isoformat(),'githubUrl':args.github,'plugins':plugins,'categories':list(dict.fromkeys(x['category'] for x in plugins)),'scope':'公开文档和展示图集。没有收费插件源码、APK、密钥、账户资料。截图不等于所有功能验收；市场版本和价格以官方页面为准。'}
 (HERE/'catalog.json').write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')
 (HERE/'asset-manifest.json').write_text(json.dumps({'assets':manifest,'count':len(manifest)},ensure_ascii=False,indent=2)+'\n')
@@ -101,12 +107,12 @@ def readme_cover_wall(items, live):
         if item['docUrl']:links.append(f'<a href="{html.escape(item["docUrl"],quote=True)}">说明文档</a>')
         links.append(f'<a href="{html.escape(detail,quote=True)}">在线详情</a>')
         if item['marketUrl']:links.append(f'<a href="{html.escape(item["marketUrl"],quote=True)}">插件市场</a>')
-        note='市场条目 · 目录占位封面' if item['externalOnly'] else item['stateLabel']
+        note=('市场原始主封面 · 保留原品牌' if item.get('coverOrigin')=='official-market' else '市场条目 · 目录占位封面') if item['externalOnly'] else item['stateLabel']
         cells.append(f'<td width="33%" valign="top"><a href="{html.escape(main,quote=True)}"><img src="{cover}" alt="{title}封面" width="360"></a><br><strong>{title}</strong><br><sub>{html.escape(note)}</sub><br>'+ ' · '.join(links)+'</td>')
     rows=[]
     for start in range(0,len(cells),3):
         row=cells[start:start+3];row+=['<td></td>']*(3-len(row));rows.append('<tr>\n'+'\n'.join(row)+'\n</tr>')
-    return '\n\n## 全部插件 · 封面画廊\n\n点击封面或说明链接阅读文档。封面是品牌展示图，实机截图请进入在线画廊；AIKit与365DailyCard为市场外链条目，使用明确标注的目录占位封面。新开发插件尚未上架时不提供虚构的市场入口。\n\n<table>\n'+'\n'.join(rows)+'\n</table>\n\n'
+    return '\n\n## 全部插件 · 封面画廊\n\n点击封面或说明链接阅读文档。封面是品牌展示图，实机截图请进入在线画廊；AIKit与365DailyCard采用其官方市场原始主封面，保留原品牌，来源与SHA256见market-cover-sources.json。新开发插件尚未上架时不提供虚构的市场入口。\n\n<table>\n'+'\n'.join(rows)+'\n</table>\n\n'
 
 (HERE/'README.md').write_text('''# Nexus Plugin Atlas\n\nNexus Wang 的 uni-app 插件公开文档集合与画廊。\n\n- 搜索与分类筛选、封面/Android实机图切换、完整README阅读、市场外链。\n- 新开发未上架、已发布旧版本与本轮升级分别标注。没有用本地版本冒充已发布版本。\n- 仅包含公开说明、封面及审核过的展示截图，不包含收费插件源码、APK或密钥。\n- 默认/待授权截图说明页面真实显示，不等于所有功能已经验收。外设、平台限制请读每款README。\n\n## 本地查看\n\n在本目录运行 `python3 -m http.server 18768`，浏览器打开 `http://127.0.0.1:18768`。使用HTTP而不是file协议，以便加载catalog.json。无npm安装或构建依赖，不加载外部字体或CDN脚本。\n\n## 更新\n\n导出脚本仅在作者本地有原工程时运行：\n\n```sh\npython3 build-catalog.py --project '/path/to/uniapp-project' --outputs '/path/to/public-outputs' --github 'https://github.com/OWNER/REPO'\n```\n\n仅复制明确的readme.md、cover.png和展示截图白名单，不复制utssdk目录。脚本支持`--overrides`指定最终发布/测试状态JSON；构建后请重新浏览核对。源工程路径由--project显式传入，仅用于本地导出；GitHub Actions不会读取本地工程。\n\n## GitHub Pages\n\n仓库提供Pages部署workflow；仓库Settings → Pages的Source选择GitHub Actions后，推送main自动发布静态页面。GitHub Pages地址和发布状态以实际部署为准。\n\n## 内容与安全\n\nREADME使用DOM节点安全渲染：不解析原始HTML、不使用innerHTML、不执行文档脚本。仅允许http(s)/mailto与本站明确的文档资源链接；下载的说明Markdown仍是文本。插件版本与实际购买价请核对各自官方市场页。\n\n作者：Nexus Wang。展示文档不改变各插件的商业授权条件。\n''')
 if args.github:

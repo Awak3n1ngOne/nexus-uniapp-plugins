@@ -197,12 +197,16 @@
       "sha256": "1dc2c76a0b5539d9784db1a4f72ce7f91d8a878371ce9fdbc045c26e8594a5df"
     },
     {
-      "path": "assets/covers/aikit.svg",
-      "sha256": "746e03e28c97b694d574ae7b8fe771f78e8f0482ad5d6e898b4136ea69f78bda"
+      "path": "assets/covers/aikit.webp",
+      "sha256": "b839d56469d239922be33ec85b4782a239c4b18ac76d0d1f3fe691422d281cc8",
+      "pageUrl": "https://ext.dcloud.net.cn/plugin?id=28709",
+      "imageUrl": "https://img-cdn-tx.dcloud.net.cn/stream/plugin_screens/a746e730-7cf8-11f1-a480-7374bd07e9ec_0.png/webp?&v=1793969344"
     },
     {
-      "path": "assets/covers/365dailycard.svg",
-      "sha256": "20de9da2be97c89c0899c045f1c7a41544abcac1d7cc12d26ff1c1b80b4114b6"
+      "path": "assets/covers/365dailycard.gif",
+      "sha256": "9705695147aa25d4ddbe763a83a14a3872c5c0da4277fab7dfe9ef5af32e83a1",
+      "pageUrl": "https://ext.dcloud.net.cn/plugin?id=22200",
+      "imageUrl": "https://img-cdn-tx.dcloud.net.cn/stream/plugin_screens/6acc7f30-ebd9-11ef-96f2-61d2a6924ed8_0.gif?&v=1739706013"
     }
   ],
   "count": 51
