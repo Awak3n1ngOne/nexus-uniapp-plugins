@@ -70,6 +70,7 @@ Files.chooseSystemFiles(options)
 | `persistRead?:boolean` | 默认false；true时也只按实际READ＋PERSISTABLE返回flags及系统take结果决定，不把请求成功当永久授权 |
 | `timeoutMs?:number` | 默认180000，5000–600000整数；包含结果处理等待。超时走fail，不能据此声称系统DocumentsUI已被关闭 |
 | `localOnly?:boolean` | 默认false；true请求系统仅显示本地文档，实际提供方由系统实现 |
+| `initialUri?:string` | 可选起始位置提示，1–4096字符、非空绝对`content://` URI且有authority；拒绝首尾空白、控制字符及其他scheme。Android26+传给系统EXTRA_INITIAL_URI，23–25校验后忽略；推荐DocumentsContract.buildDocumentUri生成的目录/文档URI，或含document ID的tree URI。仅提示，定位失败由系统回退，不读取或授权该位置，也不代替用户选择 |
 
 `NexusCancelFilePickerOptions`额外字段`requestId?:string`；省略时针对本插件当前请求。多调用方或页面退出时建议先读取并保留自己请求ID，再指定ID取消，避免结束其他调用方之后启动的请求。请求不匹配/没有请求时成功返回`cancelled:false`和实际busy状态，不会伪造选择成功。
 
@@ -149,7 +150,11 @@ Android URI授权仍是**同一宿主UID共享**的资源。登记和代际比�
 
 ### 1.1系统选择器验收状态
 
-本版新增42条产品核心/provider检查已在Android真机全部通过，0失败、0跳过；同次统一Native APK另有相机23条、夹具自身13条，合计78/78。42条只计本插件新核心检查，另两组不当作本插件功能数。UTS静态预检通过；公开UTS与系统DocumentsUI选择由本轮集成验收另行记录。42条包含同UID真实Provider及路由/边界，不冒充系统界面选择或跨UID持久授权成功。上方1.0批次107/30不得计作本版新增系统选择器的通过数量。
+本版46条选择器核心/真实Provider检查已在Android14真机全部通过，0失败、0跳过，包含initialUri默认兼容、实际Intent提示及长度/类型/scheme边界；同次统一Native APK另有相机23条、夹具自身14条，合计83/83。只有46条属于本插件新核心检查，另两组不当作本插件功能数。UTS静态预检及HBuilderX5.34实际编译通过。Native检查包含同UID真实Provider、路由与边界，不冒充系统界面或跨UID选择成功；上方1.0批次107/30不计作本版新增通过数。
+
+公开UTS单选已通过真实DocumentsUI取得content URI，跨UID有界导入固定59字节UTF8测试文档，独立读回与提供方原字节/SHA一致；附件版本链和实际持久读授权登记通过。进程重启后，本插件登记和系统持久读授权仍可查询；误选结果的本轮owned授权已验证可释放。双文件多选与用户取消正在集成验收，本段尚未将其计为通过。字节与哈希验收使用本地自生成夹具，不据此承诺所有厂商Provider、云盘、断网或进程中断场景兼容。
+
+起始位置的行为遵循[Android EXTRA_INITIAL_URI官方定义](https://developer.android.com/reference/android/provider/DocumentsContract#EXTRA_INITIAL_URI)：文档或含document ID的tree URI；非目录可能定位父目录，系统可回退默认位置。
 
 官方资料：[Android SAF](https://developer.android.com/training/data-storage/shared/documents-files)、[UTSAndroid结果及销毁监听](https://doc.dcloud.net.cn/uni-app-x/uts/utsandroid.html)。
 
