@@ -219,7 +219,11 @@
       "sha256": "9705695147aa25d4ddbe763a83a14a3872c5c0da4277fab7dfe9ef5af32e83a1",
       "pageUrl": "https://ext.dcloud.net.cn/plugin?id=22200",
       "imageUrl": "https://img-cdn-tx.dcloud.net.cn/stream/plugin_screens/6acc7f30-ebd9-11ef-96f2-61d2a6924ed8_0.gif?&v=1739706013"
+    },
+    {
+      "path": "assets/covers/nexus-tencent-map.png",
+      "sha256": "c3f594547e6b5f40c4c6370386fcdee9e571e1a8b3b5b9be8710a0fcb77b09d1"
     }
   ],
-  "count": 54
+  "count": 55
 }

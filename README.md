@@ -4,7 +4,7 @@ Nexus Wang 的 uni-app 插件公开文档集合与画廊。
 
 在线查看：[插件集合与真实演示画廊](https://awak3n1ngone.github.io/nexus-uniapp-plugins/)
 
-本次收录 26 个插件入口、24 篇说明、23 款实机画面、28 张真实截图。
+本次收录 27 个插件入口、25 篇说明、23 款实机画面、28 张真实截图。
 
 
 
@@ -56,7 +56,7 @@ Nexus Wang 的 uni-app 插件公开文档集合与画廊。
 <tr>
 <td width="33%" valign="top"><a href="https://ext.dcloud.net.cn/plugin?id=28709"><img src="assets/covers/aikit.webp" alt="AIKit封面" width="250"></a><br><strong>AIKit</strong><br><sub>市场原始主封面 · 保留原品牌</sub><br><a href="https://awak3n1ngone.github.io/nexus-uniapp-plugins/#plugin=aikit">在线详情</a> · <a href="https://ext.dcloud.net.cn/plugin?id=28709">插件市场</a></td>
 <td width="33%" valign="top"><a href="https://ext.dcloud.net.cn/plugin?id=22200"><img src="assets/covers/365dailycard.gif" alt="365DailyCard封面" width="250"></a><br><strong>365DailyCard</strong><br><sub>市场原始主封面 · 保留原品牌</sub><br><a href="https://awak3n1ngone.github.io/nexus-uniapp-plugins/#plugin=365dailycard">在线详情</a> · <a href="https://ext.dcloud.net.cn/plugin?id=22200">插件市场</a></td>
-<td></td>
+<td width="33%" valign="top"><a href="docs/nexus-tencent-map.md"><img src="assets/covers/nexus-tencent-map.png" alt="Nexus 腾讯地图与导航封面" width="250"></a><br><strong>Nexus 腾讯地图与导航</strong><br><sub>已上架 · 在线服务待本地Key验收</sub><br><a href="docs/nexus-tencent-map.md">说明文档</a> · <a href="https://awak3n1ngone.github.io/nexus-uniapp-plugins/#plugin=nexus-tencent-map">在线详情</a> · <a href="https://ext.dcloud.net.cn/plugin?id=30642">插件市场</a></td>
 </tr>
 </table>
 
