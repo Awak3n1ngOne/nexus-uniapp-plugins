@@ -1,12 +1,12 @@
 # Nexus 腾讯地图与导航
 
-Nexus Wang · `nexus-tencent-map` · 1.0.0
+Nexus Wang · `nexus-tencent-map` · 1.0.1
 
 腾讯原生地图、定位、搜索与驾车 / 货车 / 步行 / 骑行导航，新增 **离线轨迹记录与回放**。沿用 Nexus 米白、黑色、荧光黄绿视觉。
 
 **普通授权 ¥59.90；源码授权 ¥1999.00。** 源码授权是 Nexus 封装代码的许可，腾讯位置服务的商业授权、导航服务与配额由使用方自行配置和承担，不包含在插件售价中。
 
-> 本版的原生编译、离线算法回归与消费者构建结果见本文验证记录。尚未输入业务 Key，未验证真实地图渲染、在线 POI / 路线 / SDK 导航服务；不以初始化成功代替服务鉴权成功。封面为品牌插画，演示页合成轨迹也不是实时定位截图。
+> 2026-11-08 已在 Android 独立 Native 宿主验证并拍摄真实腾讯地图、服务器驾车路线及模拟导航。1.0.1 修复导航布局缺少 RecyclerView 和数据就绪事件的会话 ID 语义；本轮原生协议通过。该结果不等于 UTS / uvue 或 iOS 真机全量验收，具体范围见本文记录。封面为品牌插画，实机截图使用固定深圳示例坐标，不是设备实时位置。
 
 ## 功能
 
@@ -19,19 +19,51 @@ Nexus Wang · `nexus-tencent-map` · 1.0.0
 
 ## 平台与工程
 
+市场沿用现有 UTS API 插件条目，同时提供下述兼容模式原生视图。1.0.1 已在 HBuilderX 5.34 以该分类完成 API、组件识别注册及 uvue 消费者编译；分类名称不扩大平台支持范围。
+
 组件标签为 `<nexus-tencent-map>`，使用 UTS 兼容组件模式：uni-app 的 App nvue、uni-app x 的 App uvue VDOM。提供 Android Kotlin 与 iOS Swift 原生适配。普通 App vue / Web、小程序、鸿蒙、蒸汽模式不在本版组件范围内。消费者编译与 SDK 服务验收分别记录，不能从目录存在推断已完成全部跨平台测试。
 
 建议 HBuilderX 5.34+。Android minSdk 23，腾讯导航原生库本版主要支持 ARM；iOS 13.4+、arm64 真机。iOS 模拟器不在本版交付架构内。包含三方原生依赖，须重新制作自定义基座 / 原生包，不能只靠标准基座热更新新增 SDK。
 
-Android 固定 `tencent-map-nav-sdk-core:7.8.0`、`foundation:0.9.1.6875646-pro` 及配套 UI 依赖；导航包已经内含地图 / 定位 / 搜索，勿再重复引入独立腾讯地图或定位包。iOS 使用官方 TencentNavKit 7.9.1 配套五个 framework 与资源包，通过插件 config 的官方 Pod 源集成，另固定 libwebp 依赖。
+Android 固定 `tencent-map-nav-sdk-core:7.8.0`、`tencent-map-nav-sdk-tts:7.8.0`、`foundation:0.9.1.6875646-pro`、`androidx.constraintlayout:constraintlayout:2.1.4` 与 `androidx.recyclerview:recyclerview:1.3.2`；1.0.1 补齐导航布局所需的 RecyclerView，更新后须重新打包原生依赖。导航包已经内含地图 / 定位 / 搜索，勿再重复引入独立腾讯地图或定位包。iOS 使用官方 TencentNavKit 7.9.1 配套五个 framework 与资源包，通过插件 config 的官方 Pod 源集成，另固定 libwebp 依赖。
 
 ## 本地配置与初始化
 
 1. 在腾讯位置服务控制台配置实际 Android 包名与签名、iOS Bundle ID，开通所需地图 / 定位 / 搜索 / 导航服务。
-2. 将对应平台 Key 保留在宿主本地配置或演示页输入框中；不要提交真实 Key 到公开仓库，不要把 SecretKey 放进客户端。
+2. 将对应平台 Client Key 保留在宿主本地配置中。Android 必须先完成下方宿主 Manifest 配置，再向初始化 API 传入同一 Key；仅在演示页输入动态 Key 不能代替导航底图的原生配置。不要提交真实 Key 到公开仓库，不要把 SecretKey 放进客户端。
 3. 宿主取得最终用户对腾讯 SDK 的隐私同意后，显式 `initializeTencentMap`；不自动请求定位。
 4. 初始化回调成功再挂载组件，监听加载及错误事件。Key 配置不代表服务鉴权完成。
 5. 需要定位时另行 `requestTencentLocationPermission`；导航必须先收到当前实例的真实路线结果。
+
+### Android 宿主 Key 配置（必做）
+
+腾讯官方快速集成要求同时配置 `<application>` 下的 `TencentMapSDK` 元数据和 SDK 初始化 Key。本插件的初始化 API 负责动态初始化，不能替代宿主打包时的元数据；普通地图视图可显示，也不能据此推定导航底图已取得正确配置。[腾讯官方快速集成](https://lbs.qq.com/mobile/AndroidNavigationX/guide/quick_integrate)
+
+在**你自己的宿主工程根目录**创建或合并 `AndroidManifest.xml`。以下 `com.example.yourapp` 换成实际打包包名；已有文件仅合并所需节点，避免重复 `application` 或同名元数据：
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.yourapp">
+    <application>
+        <meta-data android:name="TencentMapSDK"
+            android:value="${NEXUS_TENCENT_MAP_KEY}" />
+    </application>
+</manifest>
+```
+
+在同一宿主的 `nativeResources/android/manifestPlaceholders.json` 中添加以下字符串映射。示例值仅为占位文字，须在本地替换为实际 **Android Client Key**，并使其与 `initializeTencentMap({ key: ... })` 一致：
+
+```json
+{
+  "NEXUS_TENCENT_MAP_KEY": "在本地替换为你的Android Client Key"
+}
+```
+
+这是宿主本地打包配置，不是插件公共 `config.json` 的配置项，也不会自动读取系统环境变量。将含真实值的 `manifestPlaceholders.json` 排除在 Git / GitHub 与公共插件源码包之外；公开仓库只保留占位模板。Client Key 最终会进入客户端安装包，仍须在腾讯控制台限制包名与签名；不要把它当服务端 SecretKey。
+
+按 DCloud 官方机制，根 Manifest 与 `nativeResources/android/manifestPlaceholders.json` 会在原生构建时合并。修改 Key、元数据或本版依赖后，**重新制作自定义调试基座 / 原生安装包并安装**；仅热更新页面或运行标准基座不会使这些配置生效。离线原生工程按官方方式手动合并 Manifest 与占位符。[DCloud Android 原生清单与资源配置](https://doc.dcloud.net.cn/uni-app-x/collocation/app-nativeresource-android.html#manifestplaceholders-json)
 
 ```ts
 import { createTencentMapId, initializeTencentMap, planTencentRoutes,
@@ -112,7 +144,7 @@ createTencentTrack({params:{coordinateSystem:'GCJ02',timeMs:1000},
 
 ## 示例与边界
 
-uni-app x 演示：`example/uniappx/map-demo.uvue`。输入 Key 前可以体验明确标注的合成离线轨迹；Key 不会由演示自动保存或输出日志。默认模拟导航，GPS 导航必须由宿主明确发起。封面不是 SDK 实拍图；待本地 Key 完成后再补真实渲染截图。
+uni-app x 演示：`example/uniappx/map-demo.uvue`。输入 Key 前可以体验明确标注的合成离线轨迹；Key 不会由演示自动保存或输出日志。默认模拟导航，GPS 导航必须由宿主明确发起。封面不是 SDK 实拍图；真实地图图面仅作为另行标注的 Native QA 证据，不把合成轨迹当作定位或导航截图。
 
 撤销隐私会停止本插件定位 / 导航并清理实例。Android SDK 同进程撤销后需要重启应用再初始化；iOS 行为见返回状态。不要与宿主其他腾讯 SDK 实例混用全局隐私设置而不协调。授权、网络、定位权限、平台限制都会导致真实失败，宿主应展示错误并允许用户停止。
 
@@ -121,6 +153,8 @@ uni-app x 演示：`example/uniappx/map-demo.uvue`。输入 Key 前可以体验�
 周边搜索统一使用 `center`、`radius`（米）、`pageIndex`、`pageSize`。Android 原生搜索半径1..50000米，iOS当前接口10..1000米；跨端使用10..1000米，超限会返回失败而不截断。路线规避拥堵使用 `avoidCongestion`。途经点跨端安全上限15个；不同模式以SDK实际返回的路线数量为准，不承诺每次都有多条。
 
 `map_loaded` 为Android SDK加载回调；iOS `map_authenticated`表示鉴权成功、`map_rendered`表示首帧完成。`navigation_started` / `navigation_stopped` / `navigation_start_failed`代表SDK实际导航事件；`speech_started`等语音状态以平台SDK实际回调为准。开始API的成功不是这些事件的替代。
+
+Android 驾车 `navigation_data_ready` 的 `data.navSessionId` 是 SDK 导航会话标识，应与 `planTencentRoutes` 成功结果中的 `data.navSessionId` 匹配；`data.navSessionIdAvailable=false` 时不能据此确认就绪。用于开始导航的仍是 `data.routes[n].routeId`。1.0.1 保留事件中的旧 `data.routeId` 作为已弃用的会话标识别名，并以 `routeIdIsDeprecatedNavSessionAlias=true` 标注；它不是算路路线 ID，不要用于 `startTencentNavigation`。此字段修正不把步行、骑行或 iOS 事件推定为同一形状。
 
 ### Android 货车路线参数
 
@@ -186,13 +220,26 @@ uni-app x 演示：`example/uniappx/map-demo.uvue`。输入 Key 前可以体验�
 
 | 范围 | 结果与边界 |
 | --- | --- |
-| Android UTS API + 兼容原生组件 + 完整 uvue 演示页 | HBuilderX 5.34 VDOM 编译通过；未启动手机定位或导航 |
+| Android UTS API + 兼容原生组件 + 完整 uvue 演示页 | HBuilderX 5.34 VDOM 编译通过；未验证该 uvue 页面的手机在线流程，独立 Native 真机结果见下方 |
 | uni-app nvue 接入 | Vue2 / Vue3 工程均编译通过，未做 iOS nvue 设备验收 |
 | iOS 消费者 | 官方UTS生成的组件/API Swift + 5个真实混编源，针对真实DCloud iPhone运行库和TencentNavKit 7.9.1，在arm64 iOS13.4目标完成类型检查与实际链接；不是签名安装或iPhone运行验收 |
 | 离线轨迹引擎与桥分发 | Kotlin JVM 36/36、Swift Foundation macOS 38/38，测试真实文件、坏数据、事务回滚、分段回放和跨语言导出；Android34原生API编译通过 |
 | 距离 / 面积算法 | Kotlin 18/18、Swift 23/23；这是坐标算法测试，不是SDK在线服务测试 |
-| 未验证 | 业务Key的服务鉴权、真实地图画面、POI/地理编码在线响应、GPS/模拟导航与实际语音播报、多机型长期稳定性、iOS设备与签名打包 |
+| Android Native 真机复验（2026-11-08） | Redmi 22101317C / Android 14；真实地图及标记、真实驾车算路、模拟导航画面、实际开始/停止和 TTS 开始/结束回调已观察；8 次 Native 接口回调均一次、主线程、code=0；不是 UTS/uvue 设备验收 |
+| 未完成验证 | 全量业务服务鉴权、POI/地理编码在线响应、GPS 导航、物理扬声器可听性、UTS/uvue 真机在线流程、多机型稳定性、iOS 设备与签名打包 |
 
-配置与服务结果必须在使用方环境验收；本地源码和消费者编译不等于在线服务可用。没有开展新的手机安装或定位采集。
+### 2026-11-08 Android 真机记录与截图
 
-官方资料：[腾讯Android导航SDK](https://lbs.qq.com/mobile/AndroidNavigationX/guide/summary)、[腾讯iOS导航SDK](https://lbs.qq.com/mobile/ios_nav_sdk/guide/summary)、[UTS兼容组件](https://doc.dcloud.net.cn/uni-app-x/plugin/uts-component-compatible.html)。功能范围参考[插件27671的公开介绍](https://ext.dcloud.net.cn/plugin?id=27671)。
+- Redmi 22101317C / Android 14 的独立 Native 宿主实际显示腾讯底图与标记。补齐 `RecyclerView 1.3.2` 并配置宿主 `TencentMapSDK` 元数据后，驾车导航视图创建成功，原 `InflateException` 未再出现；包中已检查真实 RecyclerView / ConstraintLayout 类定义。
+- 腾讯服务器返回 3 条真实驾车路线；本轮所选示例约 3,895 米、13 分钟、50 个几何点。模拟导航使用 SDK 返回的真实路线 ID，显示转向、车道、路口放大图、模拟车标及剩余里程；不是手绘路线或外部地图跳转。
+- 已修正 SDK `navigation_data_ready` 的首参语义：它是导航会话 ID。实测 `plan.navSessionId` 与实际就绪事件 `data.navSessionId` 精确匹配；路线 ID 单独用于选择真实路线，没有拿会话标识冒充路线。
+- 实际观察到地图加载、真实路线、`navigation_started`、匹配会话的 `navigation_data_ready`、TTS `speech_started` / `speech_ended` 和 `navigation_stopped`。本轮 8 次 Native 接口回调均为一次、主线程、`code=0`，无协议超时或生命周期中断；原生协议 `allObservedConditionsPassed=true`。TTS 回调不代表已独立核验扬声器可听性。
+- 全程使用固定深圳 GCJ02 公开示例，不申请定位、不读取设备 GPS；未测试货车、步行、骑行、在线搜索或 iOS 设备。测试宿主直接调用本插件的原生实现，**不是 uni-app / uvue 运行截图**。
+
+![Android 原生 SDK 真机地图：固定深圳示例](https://awak3n1ngone.github.io/nexus-uniapp-plugins/assets/screens/nexus-tencent-map-native-map.png)
+
+![Android 原生 SDK 真机模拟导航：非 GPS 导航](https://awak3n1ngone.github.io/nexus-uniapp-plugins/assets/screens/nexus-tencent-map-native-simulation.png)
+
+配置与服务结果必须在使用方环境验收；本地源码和消费者编译不等于在线服务可用。
+
+官方资料：[腾讯Android快速集成](https://lbs.qq.com/mobile/AndroidNavigationX/guide/quick_integrate)、[DCloud Android宿主配置](https://doc.dcloud.net.cn/uni-app-x/collocation/app-nativeresource-android.html)、[腾讯Android导航SDK](https://lbs.qq.com/mobile/AndroidNavigationX/guide/summary)、[腾讯iOS导航SDK](https://lbs.qq.com/mobile/ios_nav_sdk/guide/summary)、[UTS兼容组件](https://doc.dcloud.net.cn/uni-app-x/plugin/uts-component-compatible.html)。功能范围参考[插件27671的公开介绍](https://ext.dcloud.net.cn/plugin?id=27671)。
