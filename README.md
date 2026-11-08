@@ -11,6 +11,7 @@ Nexus Wang 的 uni-app 插件公开文档集合与画廊。
 ## 接入实践
 
 - [uni-app x 接腾讯地图：Android 原生配置与导航事件怎么验收](articles/nexus-tencent-map-android-guide.md)
+- [uni-app x 视频编辑前端：把时间线、本地演示和导出能力分开验收](articles/nexus-video-mobile-x-guide.md)
 
 ## 全部插件 · 封面画廊
 
