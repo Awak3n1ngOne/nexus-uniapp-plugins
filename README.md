@@ -8,6 +8,10 @@ Nexus Wang 的 uni-app 插件公开文档集合与画廊。
 
 
 
+## 接入实践
+
+- [uni-app x 接腾讯地图：Android 原生配置与导航事件怎么验收](articles/nexus-tencent-map-android-guide.md)
+
 ## 全部插件 · 封面画廊
 
 点击封面或说明链接阅读文档。封面是品牌展示图，实机截图请进入在线画廊；AIKit与365DailyCard采用其官方市场原始主封面，保留原品牌，来源与SHA256见market-cover-sources.json。新开发插件的市场入口仅在已核对上架后提供。
