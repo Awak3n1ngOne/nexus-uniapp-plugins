@@ -243,7 +243,107 @@
     {
       "path": "assets/screens/nexus-amap-native-simulation.png",
       "sha256": "25522c09aef7471eef75d86d548b9c48ca7270cc3f718635d3128ce7a8ea5f17"
+    },
+    {
+      "path": "assets/covers/aiko-scan-pro-blue.png",
+      "sha256": "08533e8bd6186cced8f6022308074c64ead3ede7c7ba4f2f3eaeee1457e284e1"
+    },
+    {
+      "path": "assets/covers/nexus-camera-core-blue.png",
+      "sha256": "bfacc1f5567497667de243f1ca09c849be736d1f5d403dccf2d3c3c1c24c8e16"
+    },
+    {
+      "path": "assets/covers/nexus-file-workflow-blue.png",
+      "sha256": "e05ff89fc778181957f33836e1be6a6e5d7e6d0edf19bce1b8f042d3c5a919ba"
+    },
+    {
+      "path": "assets/covers/nexus-sqlite-core-blue.png",
+      "sha256": "ec99c812248c4473dda5e771b982f36f9826a5bd6cf53ef468efc91f3f7afc85"
+    },
+    {
+      "path": "assets/covers/aiko-ble-core-blue.png",
+      "sha256": "12bd3e85a978bdc3131c51ba08c28ce5ee46f6376e8607036073da2de35f1f05"
+    },
+    {
+      "path": "assets/covers/aiko-doc-scan-blue.png",
+      "sha256": "6b8751cf60245bec55d8bfa4e3a5107ab503663ed6517a90cd0d57c26c42bbc7"
+    },
+    {
+      "path": "assets/covers/aiko-doc-viewer-blue.png",
+      "sha256": "07eb0f5cfa16f4d05273f2093629ea71e6393d22164b0191a7a0f5125138b2a9"
+    },
+    {
+      "path": "assets/covers/aiko-image-edit-blue.png",
+      "sha256": "de2fc1da22456009b91b2e7a6b17156c704edc039dfb5a2ba46a29706a9d84be"
+    },
+    {
+      "path": "assets/covers/aiko-gallery-hub-blue.png",
+      "sha256": "32a28f711a246be48f09b5560dd3c75e2387ea0fe3c0b66818ec6a0fadc9e07a"
+    },
+    {
+      "path": "assets/covers/aiko-video-edit-blue.png",
+      "sha256": "4e5cab9303b2449008805815b7b6b42b61fa0ae5027b6f2b86458fc4d545971f"
+    },
+    {
+      "path": "assets/covers/aiko-video-thumb-blue.png",
+      "sha256": "9a9592d23748d11b3c914f5c3509705486db4edb5a9429a96d96b7a6d7ef9f99"
+    },
+    {
+      "path": "assets/covers/aiko-smart-tts-blue.png",
+      "sha256": "67ffb76c4ddee3a34a4452c0fa6b8c66cc64d96bf7e633c2d4f36afa5cbfeb8f"
+    },
+    {
+      "path": "assets/covers/aiko-asr-blue.png",
+      "sha256": "d65d3675a33c9415a2f75947e43c7883caeecb160d9ba74756644b0476e588cc"
+    },
+    {
+      "path": "assets/covers/aiko-call-recorder-blue.png",
+      "sha256": "710d91150bc5e4d1f6e9ed33a3e85c800107e0ee0ee82ec2d8325d20bfdb7e27"
+    },
+    {
+      "path": "assets/covers/aiko-live-player-blue.png",
+      "sha256": "a6851c4669fa78805f451fe08ecb0cfee8080fb93f01c45aa7b1ca0b2c2ea77c"
+    },
+    {
+      "path": "assets/covers/aiko-cast-core-blue.png",
+      "sha256": "92be7df6c73087b2417b7dcda90b439871056893dbe20efdd98f8669f642280f"
+    },
+    {
+      "path": "assets/covers/aiko-share-core-blue.png",
+      "sha256": "6f09169dc1cdd7e8c0759ee04c2ef05e710c19369523edffb6b3eb914ed7dd4a"
+    },
+    {
+      "path": "assets/covers/aiko-geo-core-blue.png",
+      "sha256": "4e7972f1e6522d429aeac32504225e6ef071d797a48a539dcf9bca96cffda186"
+    },
+    {
+      "path": "assets/covers/aiko-device-id-blue.png",
+      "sha256": "d9b09bfe58f54a7d400729db9c834d27c70fc91f2ae769eab4eb56fcf4c0772e"
+    },
+    {
+      "path": "assets/covers/aiko-keep-alive-blue.png",
+      "sha256": "ba3bc59da71d7f3c22356fcc8cda2b67098af504dfb63655e0725dd58d28246d"
+    },
+    {
+      "path": "assets/covers/aiko-float-window-blue.png",
+      "sha256": "b707285e242273a4ce6d5570108070583d6b6c29f5eeb88a3d80ee148224f478"
+    },
+    {
+      "path": "assets/covers/aiko-alipay-core-blue.png",
+      "sha256": "70647003b2d44dc659cc4c314550b9ce52f3ac322ec2ecd7fbf41bd4954b2f20"
+    },
+    {
+      "path": "assets/covers/aiko-wechat-core-blue.png",
+      "sha256": "808aa4be3feee16e38352a3ba8eaa4f21ce37312488c4f5849f05d6855d5647e"
+    },
+    {
+      "path": "assets/covers/nexus-tencent-map-blue.png",
+      "sha256": "eab421e1636c8744c6898e0f4b0d3794f84ce751e946b3630736507ecd5642b5"
+    },
+    {
+      "path": "assets/covers/nexus-amap-blue.png",
+      "sha256": "488f6b24cc05ace2c088259d335fda121e00ad7707ada6aed15f1dae73a528ec"
     }
   ],
-  "count": 60
+  "count": 85
 }
