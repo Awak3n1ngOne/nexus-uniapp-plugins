@@ -2,7 +2,7 @@
   "assets": [
     {
       "path": "assets/covers/aiko-scan-pro.png",
-      "sha256": "bb1577a609a5623bfc29996be13b74ceac97ff9c8e7f39ea145f419fe9ecdfbe"
+      "sha256": "2b7676c03ed06af2a17f90ca3869c105dfba326d7bc88d8af5264c34901c24f7"
     },
     {
       "path": "assets/screens/aiko-scan-pro.png",
@@ -14,7 +14,7 @@
     },
     {
       "path": "assets/covers/nexus-camera-core.png",
-      "sha256": "d4b8bb9d8a6a9a8cfac9935083bcbe885477e3c8698f18d80d493789cddc9b7a"
+      "sha256": "b4ec43710d51908074c99d192f1c42b117ddc34d020e5d6e7464d0730202965f"
     },
     {
       "path": "assets/screens/nexus-camera-core-wave-0.png",
@@ -22,7 +22,7 @@
     },
     {
       "path": "assets/covers/nexus-file-workflow.png",
-      "sha256": "ab400ff1815ff6502629829701a967ad961773c40a37c4279772d5a03dec9c73"
+      "sha256": "9549d457c5fcdc966ea90878a79547ba79de137953a1f522dc30b21a0f386137"
     },
     {
       "path": "assets/screens/nexus-file-workflow-wave-0.png",
@@ -34,7 +34,7 @@
     },
     {
       "path": "assets/covers/nexus-sqlite-core.png",
-      "sha256": "ed159920641d84d72a989c7754ae43b8efa8feef65dd4f93d139a9af3689c98c"
+      "sha256": "a424134781e804aa5078c23d565b644ba981618a2478fc4fb24c4c5ce2ba62cc"
     },
     {
       "path": "assets/screens/nexus-sqlite-core-wave-0.png",
@@ -42,7 +42,7 @@
     },
     {
       "path": "assets/covers/aiko-ble-core.png",
-      "sha256": "4bd57efb9d5d291ac6861712551e6f0619f5738aaf93ae95ff36566ff9a023bd"
+      "sha256": "4dca6afd30ce94f5df93216149d9ac180760981343db22df4246d8be0f49439c"
     },
     {
       "path": "assets/screens/aiko-ble-core.png",
@@ -50,7 +50,7 @@
     },
     {
       "path": "assets/covers/aiko-doc-scan.png",
-      "sha256": "e0e11e94263702d59fa0117d92bb8fc96fdd24a238e6e70413f3d8c9dfecd17d"
+      "sha256": "24b75f4b180614ee295418d7ed4dce1413adc03a195bcf33d91f79846653b5cc"
     },
     {
       "path": "assets/screens/aiko-doc-scan.png",
@@ -58,7 +58,7 @@
     },
     {
       "path": "assets/covers/aiko-doc-viewer.png",
-      "sha256": "b3d90167e97549fa02bcd365fe32c5a7cd83be55204c13bf9ba6881745eccb12"
+      "sha256": "7389f12ebdfed92dda4b8cc21ad9ab9f0bc2b3fc1fdde5014e3ff21c1760a94b"
     },
     {
       "path": "assets/screens/aiko-doc-viewer.png",
@@ -70,7 +70,7 @@
     },
     {
       "path": "assets/covers/aiko-image-edit.png",
-      "sha256": "146eec8bdffabef3e6006dce19056bb9d73475662b9186fa8148603edbb096f2"
+      "sha256": "cba8b0fe52b3d4c169034e666d91983006a0d1487ee1ec84878da8a881a72f37"
     },
     {
       "path": "assets/screens/aiko-image-edit.png",
@@ -78,7 +78,7 @@
     },
     {
       "path": "assets/covers/aiko-gallery-hub.png",
-      "sha256": "debb65b6cb10d315192c2723e34dce3c7c564632f1c95f4ff9b09852858783d3"
+      "sha256": "3720739c549266364238a07d074abcc421a252fb5346946483d4ceac5775914c"
     },
     {
       "path": "assets/screens/aiko-gallery-hub.png",
@@ -86,7 +86,7 @@
     },
     {
       "path": "assets/covers/aiko-video-edit.png",
-      "sha256": "aeaa70d4acb5bd9e7f0dc5cb252ed57751103e0b19564986e21ee93b8c204416"
+      "sha256": "a5302b17ad58e96a8ae38aa4dbb3bc3f17428c7b412bf89bc182093013c107de"
     },
     {
       "path": "assets/screens/aiko-video-edit.png",
@@ -98,7 +98,7 @@
     },
     {
       "path": "assets/covers/aiko-video-thumb.png",
-      "sha256": "5ee54cb423577c8750cdfe3da091c3ab0d5f0107e171840904671ac7b733d6e6"
+      "sha256": "f9362849b060ce9f6a47c148454eb97d7e4127845d4a3041ce49e13ee776ddc5"
     },
     {
       "path": "assets/screens/aiko-video-thumb.png",
@@ -114,7 +114,7 @@
     },
     {
       "path": "assets/covers/aiko-smart-tts.png",
-      "sha256": "05bac402d1f2d4c0063ae2945b4998c5c86d15be5991d086ff1d8af4c4ec70dc"
+      "sha256": "78be7c435d69eed286c123f7e63908cbcc80067c36609e0b0d4cd8bf9e161e90"
     },
     {
       "path": "assets/screens/aiko-smart-tts.png",
@@ -122,7 +122,7 @@
     },
     {
       "path": "assets/covers/aiko-asr.png",
-      "sha256": "250b07dfafc818e18296af22a93290434e5e9a2460c5e3b245b0d0b48b617ba0"
+      "sha256": "113a665b84c1d0fb8b7bad55a7826935f4648c2681338f6531e1b331b525351b"
     },
     {
       "path": "assets/screens/aiko-asr.png",
@@ -130,7 +130,7 @@
     },
     {
       "path": "assets/covers/aiko-call-recorder.png",
-      "sha256": "1e13e9c013d0b9f5a3609eef2971dc08ac452e087a2d5ea5c164fdf97d2109cb"
+      "sha256": "73f9a7b597bb41dfddf9a2d01d56355537f83eb34d191d1c9f557e9968f8815d"
     },
     {
       "path": "assets/screens/aiko-call-recorder.png",
@@ -138,7 +138,7 @@
     },
     {
       "path": "assets/covers/aiko-live-player.png",
-      "sha256": "99e4e83e325ccbbd95fb5ee1c36daed3c4a3a53c91b3a49d1a39b450c08c4824"
+      "sha256": "1f8efea41c4c9b99713820871048cd069fd78455393324187e3424ba2e7e78ed"
     },
     {
       "path": "assets/screens/aiko-live-player.png",
@@ -146,7 +146,7 @@
     },
     {
       "path": "assets/covers/aiko-cast-core.png",
-      "sha256": "bff25649d63e64c49d9b4146ce719051d4ce2f3bea7c9dc85dfc3f945d664c61"
+      "sha256": "773c53492a1d287d36f6657b894a2e68c776261e14c3afadc518dafb7a67ede8"
     },
     {
       "path": "assets/screens/aiko-cast-core.png",
@@ -154,7 +154,7 @@
     },
     {
       "path": "assets/covers/aiko-share-core.png",
-      "sha256": "9f1d03b876b11cf2284183156cafafae72b91350f7ae2d8d2b7d5cd835f29309"
+      "sha256": "bb7440172c2c82a1254017882b97907cd19c6bc0969006bb096c6ea79b709e89"
     },
     {
       "path": "assets/screens/aiko-share-core.png",
@@ -162,7 +162,7 @@
     },
     {
       "path": "assets/covers/aiko-geo-core.png",
-      "sha256": "4e8e7fbab0378648c1aeda98972b78245ee4af9b09ccb536bf9966702dc7de33"
+      "sha256": "186728cfc1d99843f5d9fa700840aef17843a55fcfa6a92362832392c2099132"
     },
     {
       "path": "assets/screens/aiko-geo-core.png",
@@ -170,7 +170,7 @@
     },
     {
       "path": "assets/covers/aiko-device-id.png",
-      "sha256": "c6dfb65b007562b7a48df27947151e6e09f3abb8fabf0e14f06dd4c60205988f"
+      "sha256": "dd60a2a5923933b197694b8f4baa1e807bc0058f6083a3a661cd3ca0a8d1f694"
     },
     {
       "path": "assets/screens/aiko-device-id.png",
@@ -178,7 +178,7 @@
     },
     {
       "path": "assets/covers/aiko-keep-alive.png",
-      "sha256": "6df54bdbf9d0d67d3b0f1a088b79be1632d4105b4821f8d7fc78153f36ed6fe2"
+      "sha256": "e78023d332a6249550cf6b919ddd1123728233f4f480eaee62a69a9349ee0226"
     },
     {
       "path": "assets/screens/aiko-keep-alive.png",
@@ -186,7 +186,7 @@
     },
     {
       "path": "assets/covers/aiko-float-window.png",
-      "sha256": "7d253db45d92f4b3e9b7b85dedbc3d90b76beaa0c3a4c5eabae0073296cd80c6"
+      "sha256": "0ddc0b9db9ae0b20180887c87533816c21160e05c58461ce2b4c28fbb9ffb35c"
     },
     {
       "path": "assets/screens/aiko-float-window.png",
@@ -194,7 +194,7 @@
     },
     {
       "path": "assets/covers/aiko-alipay-core.png",
-      "sha256": "d161f1cedeba563f433772b363dc4987cce7e63e16e2418d8c75a46124ab7eed"
+      "sha256": "edf2e300eacbc61821cd673a02cbf90d986fbe4c8fa9d38a630334c3788c7b06"
     },
     {
       "path": "assets/screens/aiko-alipay-core.png",
@@ -202,7 +202,7 @@
     },
     {
       "path": "assets/covers/aiko-wechat-core.png",
-      "sha256": "637b9d22aa912a50f439b3a37df25223aa6623457652c933aca25e026c3f4874"
+      "sha256": "82b667f44782639f93a8cca2f07be6f6959c9c8479fce86b7c81ae40135fa5ce"
     },
     {
       "path": "assets/screens/aiko-wechat-core.png",
@@ -222,7 +222,7 @@
     },
     {
       "path": "assets/covers/nexus-tencent-map.png",
-      "sha256": "c3f594547e6b5f40c4c6370386fcdee9e571e1a8b3b5b9be8710a0fcb77b09d1"
+      "sha256": "8b800aad12035a25f20a1c0b78ffdd237eb7f8f7b8d542befc47462fd612a129"
     },
     {
       "path": "assets/screens/nexus-tencent-map-native-map.png",
@@ -234,7 +234,7 @@
     },
     {
       "path": "assets/covers/nexus-amap.png",
-      "sha256": "596508e175a3cb80d57be9f71ce01593eac753f0365f6f26d4e6733066ee16e1"
+      "sha256": "6b891a801ce3f689a83d0e43be83a79512a6491aefd95513ac9ca08fedd8a68e"
     },
     {
       "path": "assets/screens/nexus-amap-native-map.png",
