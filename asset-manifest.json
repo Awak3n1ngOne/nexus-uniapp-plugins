@@ -231,7 +231,19 @@
     {
       "path": "assets/screens/nexus-tencent-map-native-simulation.png",
       "sha256": "6bf5fae0222800aea419cbe06943876fea920324265c2880195014f48aed1a5c"
+    },
+    {
+      "path": "assets/covers/nexus-amap.png",
+      "sha256": "596508e175a3cb80d57be9f71ce01593eac753f0365f6f26d4e6733066ee16e1"
+    },
+    {
+      "path": "assets/screens/nexus-amap-native-map.png",
+      "sha256": "2b6abaf076d7b8615b60e3d92ff755aaefbca129004093dc1645d2c015936a77"
+    },
+    {
+      "path": "assets/screens/nexus-amap-native-simulation.png",
+      "sha256": "25522c09aef7471eef75d86d548b9c48ca7270cc3f718635d3128ce7a8ea5f17"
     }
   ],
-  "count": 57
+  "count": 60
 }
