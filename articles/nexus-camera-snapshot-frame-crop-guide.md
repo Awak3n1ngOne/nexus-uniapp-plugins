@@ -102,7 +102,7 @@ function grabPreviewFrame(): void {
 }
 ```
 
-组件示例见仓库的 `example/uniappx/camera-demo.uvue`。接入时不要把 `ready` 当作镜头已经开启，也不要在 `startCamera` 的绑定成功回调里直接假设已有可抓取的图像。
+[DCloud 插件商城说明](https://ext.dcloud.net.cn/plugin?id=30627)提到演示路径 `example/uniappx/camera-demo.uvue`，但本推广仓库未包含该示例目录，本文也未核实安装包内的实际位置；请以下载版本的实际文件和配套说明为准。接入时不要把 `ready` 当作镜头已经开启，也不要在 `startCamera` 的绑定成功回调里直接假设已有可抓取的图像。
 
 宿主 Activity 必须实现 `LifecycleOwner`。新增 CameraX 依赖与权限后，需要按文档重建调试基座。只做拍照或预览抓帧、不录制音频时，无须为此申请录音权限；`requestCameraPermissions` 的 `audio` 未设或为 `false` 时，仅申请 CAMERA。
 
