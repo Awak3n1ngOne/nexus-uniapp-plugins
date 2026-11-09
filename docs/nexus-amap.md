@@ -4,7 +4,7 @@
 
 基于高德原生 SDK 的嵌入式地图、前台定位、地点搜索、地址解析和多方式导航插件。新增独立的**本地离线轨迹记录与回放**：无需地图 Key 即可保存显式提交的坐标、暂停续记、回放、导出和删除。地图画面由真实 SDK 提供；封面中的路线只是品牌图形。
 
-![Nexus 高德地图与导航](../assets/covers/nexus-amap.png)
+![Nexus 高德地图与导航](https://img-cdn-tx.dcloud.net.cn/stream/plugin_screens/2a855860-dc34-11f1-aaf7-87e28a85abeb_0.png?1794225324)
 
 ## 价格与服务授权
 
@@ -12,6 +12,9 @@
 | --- | ---: |
 | 普通授权版 | ¥79.90 |
 | 源码授权版 | ¥2499.00 |
+
+普通授权目标价为 ¥79.90；2026-11-09 市场实际显示 ¥79.91（提交值与市场相差 1 分）。平台当前限制 24 小时内仅改价一次，待允许后更正；购买前以市场实际金额为准。源码授权 ¥2499.00 正确。
+
 
 插件授权与高德账号的服务许可、调用配额、地图/定位/导航及货车服务授权分别配置。插件价格不包含高德商业许可，不附送可转售或共享的 Key。购买前确认自己的应用具备所需服务权限；货车服务未开通时不会降级为小客车路线。具体插件使用范围遵循 DCloud 实际授权订单。
 
@@ -156,9 +159,9 @@ Android 每个导航视图同时只允许一次算路；请求超时、拒绝或
 
 未验收：UTS/uvue 真机页面、iOS 真机及签名包、实时 GPS/连续定位、货车商业服务、步行/骑行真机导航、真实搜索/地址解析及物理可听语音。iOS HBuilder 自动原生构建当前受本机 CocoaPods 环境影响，生成消费者的真实 SDK 类型检查/链接为独立检查，不冒充签名构建。当前真实截图来自独立 Android Native QA 宿主，固定深圳坐标，不代表手机当前位置。
 
-![Android Native 真实高德地图](../assets/screens/nexus-amap-native-map.png)
+![Android Native 真实高德地图](https://img-cdn-tx.dcloud.net.cn/stream/plugin_screens/2a855860-dc34-11f1-aaf7-87e28a85abeb_1.png?1794225339)
 
-![Android Native 高德模拟导航](../assets/screens/nexus-amap-native-simulation.png)
+![Android Native 高德模拟导航](https://img-cdn-tx.dcloud.net.cn/stream/plugin_screens/2a855860-dc34-11f1-aaf7-87e28a85abeb_2.png?1794225359)
 
 ## 常见问题
 
