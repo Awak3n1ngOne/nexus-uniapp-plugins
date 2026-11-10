@@ -1,12 +1,12 @@
 # Nexus 原生扫码
 <!-- NEXUS:BRAND:START -->
-作者：**Nexus Wang**。演示页与封面使用统一 Nexus 视觉：米白背景、近黑功能卡、荧光黄绿点缀。
+作者：**Nexus Wang**。演示页与封面使用统一 Nexus 视觉：黑色与深蓝背景、电光蓝重点按钮、白色标题。
 
 插件 ID 与导入路径仍为 `aiko-scan-pro`，既有 API 名称保持兼容。更新演示页时请保留实际权限、错误与能力诊断；不把未授权或未实现能力视为成功。
 <!-- NEXUS:BRAND:END -->
 
 <!-- NEXUS:WAVE10:VERIFICATION:START -->
-## 本轮验收记录（2026-11-06）
+## 历史验收记录（2026-11-06）
 
 本插件属于本轮2款新增、8款升级的交付。整批10项已在同一台Android14手机的统一Native复验APK中完成：数据38条、工业扫码/标签28条、文档图像15条、媒体26条，合计107条全部通过，0失败、0跳过；公开UTS新增链路另有30条真实回归通过。**这些是整批不同层次的检查数，不是本插件107个功能，也不能相加称为137个独立功能。** 本插件只对应其中相关检查，测试不替代全功能、全机型或长期稳定性验收。
 
@@ -22,13 +22,10 @@
 <!-- AIKO:RELEASE-NOTES:START -->
 ## 当前版本与授权价格
 
-当前版本：**1.2.0** · 本轮分类：**复杂类** · 更新时间：2026-11-06。
+当前版本：**1.3.0** · 本轮分类：**复杂类** · 更新时间：2026-11-10。
 
 二维码/条形码、自由布局、多码/连续识别、去重、反馈与缩放。
 
-<!-- AIKO:PRICE-WINDOW:START -->
-**价格状态：目标定价尚未全部生效。** 当前市场普通授权价为 ¥39.99、源码授权价为 ¥499.99；目标为 ¥29.90 / ¥299.00。市场返回 24 小时调价限制，未生效部分以后续购买按钮显示为准。
-<!-- AIKO:PRICE-WINDOW:END -->
 
 | 授权类型 | 价格 |
 | --- | ---: |
@@ -770,7 +767,7 @@ A：支持 pickImageAndScan。
 
 ---
 
-欢迎反馈问题或深度定制，微信：**yala999888**
+问题反馈与功能建议请通过插件市场作者主页联系。
 
 
 ## 2026-11-05 稳定性改进
@@ -859,3 +856,52 @@ Scan.createScanOrder(options)
 
 在同一台Android14手机实测4条通过：首次/恢复时CameraX均达到OPEN与STREAMING且本视图2个UseCase已绑定；暂停/停止时旧UseCase全部解绑、分析executor已shutdown并清理引用、相机达到CLOSED；恢复绑定新一代UseCase。QA未拍照、未存帧、未记录识别码值。**这4条只验证实际相机生命周期，不表示实体纸码/ROI现场识别、多码点选、PDA或DPM已验收。**
 <!-- NEXUS:SCAN:LIFECYCLE:END -->
+
+## 1.3.0 盘点审计与对账导出（Android）
+
+新增 `getScanOrderEvents` 与 `exportScanOrderCsv`。沿用 `IndustrialScanOptions` 的 `{ payload, callback }`，回调统一 `{ code, message, data }`，`code=0` 成功；参数错误/订单不存在返回 `9010020`。新功能在工作线程读本地 SQLite，回调回主线程，不启动相机、不联网、不改盘点事件。
+
+### 盘点事件分页
+
+```typescript
+import * as Scan from '@/uni_modules/aiko-scan-pro'
+import { IndustrialScanOptions } from '@/uni_modules/aiko-scan-pro'
+const page: IndustrialScanOptions = {
+  payload: { scope: 'warehouse-01:user-01', orderId: 'order-001', limit: 50 },
+  callback: (res: UTSJSONObject) => { console.log(JSON.stringify(res)) }
+}
+Scan.getScanOrderEvents(page)
+```
+
+先用 `createScanOrder` 创建订单，再读取。`scope` 和 `orderId` 必填；`limit` 为整数 1–200，默认 50；`includeVoided` 默认 `true`，可保留撤销审计轨迹。返回 `data.events`，每项包含 `rowId/eventId/sku/serial/quantity/voided`。
+
+继续读取时，把本次返回的 `nextAfterRowId` 和 `snapshotRowId` 分别传为下一次的 `afterRowId`、`snapshotRowId`，并保持同一 scope/orderId/includeVoided。按入账行号升序；`hasMore=false` 结束。固定上界排除翻页后新入账的记录；**撤销状态仍按每次查询时的最新状态读取，不是跨请求冻结的完整快照**。刷新第一页时不传游标即可看到新增记录。游标不是权限凭证，宿主仍需正确管理账号隔离 scope。
+
+### 导出 CSV 文本
+
+```typescript
+const report: IndustrialScanOptions = {
+  payload: { scope: 'warehouse-01:user-01', orderId: 'order-001', kind: 'summary', maxRows: 10000 },
+  callback: (res: UTSJSONObject) => { console.log(JSON.stringify(res)) }
+}
+Scan.exportScanOrderCsv(report)
+```
+
+| 参数/结果 | 说明 |
+| --- | --- |
+| `kind` | `summary`（默认）：SKU 应收/实收/差异；`events`：逐条入账/撤销记录 |
+| `maxRows` | 整数 1–10000，默认 10000；超限报错，不静默截断 |
+| `includeVoided` | 仅 events 有效，默认 true；summary 始终排除已撤销事件 |
+| `data.csv` | UTF-8 文本，CRLF 行尾，无 BOM；宿主自行存文件或发起分享 |
+| `data.rowCount / sha256` | 数据行数（不含表头）及 UTF-8 CSV 内容的 SHA-256 |
+| `data.formulaEscaped` | true；文本单元格整体双引号包围，内部引号双写；公式危险前缀加单引号 |
+
+CSV 导出是为表格对账准备：SKU/序列号以 `= + - @`（允许前置空白）起始，或以制表/回车/换行起始时，加单引号保护。原始入账数据不改变；需要精确原始文本应读取事件 API。summary 以 SKU 排序，events 以入账行号排序。文件含业务数据，是否对外分享由宿主主动决定。
+
+演示入口：`example/uniappx/industrial-demo.uvue` 的“盘点审计与 CSV”。新增 API 仅 Android；iOS 明确返回不支持。功能实现和版本不代表 PDA/打印机/全机型通过验收，设备验证结果以本次发布记录为准。
+
+## 1.3.0 本次验证（2026-11-10）
+
+本次六款升级在 Android 14 真机执行生产 Native 新增用例84项（扫码/标签30、文件/数据库36、图片/阅读18）及既有回归81项，合计165项通过、0失败。公开 UTS 消费者另有21项通过；包含6款新版示例的7页宿主已通过 HBuilderX 5.34 Android编译。计数属于整批测试，不是本插件功能数。
+
+本次未连接实际打印机，不表示标签已成功出纸；未扩大相机现场识码、系统文件选择器交互、其他系统版本或 iOS/Harmony 的验收范围。新接口与限制见本版本功能说明。

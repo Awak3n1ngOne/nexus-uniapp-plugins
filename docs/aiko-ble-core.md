@@ -1,12 +1,12 @@
 # Nexus BLE 与打印指令
 <!-- NEXUS:BRAND:START -->
-作者：**Nexus Wang**。演示页与封面使用统一 Nexus 视觉：米白背景、近黑功能卡、荧光黄绿点缀。
+作者：**Nexus Wang**。演示页与封面使用统一 Nexus 视觉：黑色与深蓝背景、电光蓝重点按钮、白色标题。
 
 插件 ID 与导入路径仍为 `aiko-ble-core`，既有 API 名称保持兼容。更新演示页时请保留实际权限、错误与能力诊断；不把未授权或未实现能力视为成功。
 <!-- NEXUS:BRAND:END -->
 
 <!-- NEXUS:WAVE10:VERIFICATION:START -->
-## 本轮验收记录（2026-11-06）
+## 历史验收记录（2026-11-06）
 
 本插件属于本轮2款新增、8款升级的交付。整批10项已在同一台Android14手机的统一Native复验APK中完成：数据38条、工业扫码/标签28条、文档图像15条、媒体26条，合计107条全部通过，0失败、0跳过；公开UTS新增链路另有30条真实回归通过。**这些是整批不同层次的检查数，不是本插件107个功能，也不能相加称为137个独立功能。** 本插件只对应其中相关检查，测试不替代全功能、全机型或长期稳定性验收。
 
@@ -20,13 +20,10 @@
 <!-- AIKO:RELEASE-NOTES:START -->
 ## 当前版本与授权价格
 
-当前版本：**1.1.0** · 本轮分类：**复杂类** · 更新时间：2026-11-06。
+当前版本：**1.2.0** · 本轮分类：**复杂类** · 更新时间：2026-11-10。
 
 BLE 扫描连接、GATT 读写/Notify、MTU、分包队列、ESC/POS 指令渲染。
 
-<!-- AIKO:PRICE-WINDOW:START -->
-**价格状态：目标定价尚未全部生效。** 当前市场普通授权价为 ¥29.90、源码授权价为 ¥999.00；目标为 ¥29.90 / ¥299.00。市场返回 24 小时调价限制，未生效部分以后续购买按钮显示为准。
-<!-- AIKO:PRICE-WINDOW:END -->
 
 | 授权类型 | 价格 |
 | --- | ---: |
@@ -293,7 +290,7 @@ onUnload(() => AikoBle.stopScan())
 
 ---
 
-欢迎反馈问题或深度定制，微信：**yala999888**
+问题反馈与功能建议请通过插件市场作者主页联系。
 
 
 ## 2026-11-05 稳定性改进
@@ -301,7 +298,7 @@ onUnload(() => AikoBle.stopScan())
 Android：补齐 Android 21–32 的旧版 GATT 读取/Notify 回调；忽略旧连接的迟到回调；MTU 失败保留原值；并发读取/MTU 请求返回忙，系统拒绝请求立即回调失败；断线结束待处理读取/MTU 回调。此前版本TSPL/ZPL未实现；1.1.0新增指令子集，仍需实物验收。未连接外设时只能验证渲染和错误路径，不能视为打印验收。
 
 
-### 本轮真实功能测试补充
+### 历史功能测试补充（2026-11-06）
 
 本轮Android14已验证生产ESC/POS文本/对齐/粗体/分割线/二维码/走纸/切纸字节、hex/Base64一致性、非法hex参数错误、生产失败队列清理和回调恰好一次；不代表已连接真实打印机成功打印。hex现支持换行/Tab，超长二维码数据会在16位协议长度字段溢出前失败，打印机本身的二维码容量仍由型号限制。
 
@@ -324,3 +321,52 @@ Ble.renderDocument(options)
 - 不支持中文内置字体承诺、图片光栅、RFID、CPCL、原始指令注入、经典蓝牙SPP或OTA。
 
 示例包新增两个标签按钮，显示实际指令长度/hex。主机/UTS编译、字节与拒绝路径验证不替代BLE连接与纸张输出。ZPL参考：[Zebra官方编程指南](https://www.zebra.com/content/dam/support-dam/en/documentation/unrestricted/guide/software/zpl-zbi2-pg-en.pdf)。
+
+## 1.2.0 标签模板批量渲染（Android）
+
+新增 `renderLabelBatch`：一份结构化 TSPL/ZPL 模板绑定多条记录，**整批数据和指令校验完成后**返回各标签字节。此接口不请求蓝牙权限、不连接或发送；主线程接收回调，渲染在工作线程执行。
+
+```typescript
+import * as Ble from '@/uni_modules/aiko-ble-core'
+import { LabelBatchOptions } from '@/uni_modules/aiko-ble-core'
+const batch: LabelBatchOptions = {
+  payload: {
+    protocol: 'tspl',
+    template: {
+      widthDots: 400, heightDots: 240,
+      items: [
+        { type: 'text', x: 16, y: 16, content: 'SKU {{sku}}' },
+        { type: 'barcode', x: 16, y: 64, height: 48, content: '{{sku}}' }
+      ]
+    },
+    records: [{ sku: '0001' }, { sku: '0002' }]
+  },
+  callback: (res: UTSJSONObject) => { console.log(JSON.stringify(res)) }
+}
+Ble.renderLabelBatch(batch)
+```
+
+`LabelBatchOptions` 为 `{ payload: UTSJSONObject, callback? }`。回调 `{code,message,data}`，`code=0` 成功；参数/模板校验失败 `9024010`，其他渲染异常 `9024014`。iOS/Harmony 的该新增接口明确返回 `9024001` 不支持。
+
+| 字段 | 规则 |
+| --- | --- |
+| `protocol` | `tspl`（默认）或 `zpl`；本批量接口不支持 ESC/POS/raw |
+| `template` | 复用现有结构化标签 `widthDots/heightDots/gapDots/dotsPerMm/copies/items` |
+| `records` | 1–100 条对象，每条 1–100 个字符串字段，单值最多 1024 字符；请用字符串保留前导零 |
+| `{{field}}` | 仅替换 items 的 content；字段名首位英文字母，后续字母/数字/下划线，最多 64 字符；不支持表达式/嵌套变量 |
+| `maxBytes` | 原始指令总字节上限 1–1048576，默认 1 MiB；超限整批失败 |
+| `copies` | 每条 1–100，总副本不超过 1000；不改变返回 jobs 的数量 |
+
+返回 `data.jobs`（每项 `index/length/hex/base64`）、`recordCount`、`labelCount`、`totalBytes`、`protocol`、`sent:false`。每个 job 是可单独发送的完整标签任务；避免同时发送 hex 与 base64，按已有 `sendBytes` 选择一种。一次失败不返回前面已通过的部分标签，也不会发送任何标签。
+
+变量替换后继续执行原协议校验：当前标签文字只支持可打印 ASCII；TSPL 引号/反斜线/换行拒绝，ZPL 使用字段十六进制转义保护 `^/~/_`，Code128 的 `>` 控制符拒绝。替换结果不会再次当作模板运行。物理排版取决于纸张、DPI 和打印机固件，**指令生成成功不等于纸张已打印**。
+
+演示入口：`example/uniappx/label-batch-demo.uvue`，无外设也可查看两条标签预检结果。需要实际发送时由宿主在用户确认目标设备后使用已有通信 API。
+
+批量模板 JSON 文本最多 131072 字符；单项模板 content 最多 4096 字符。返回的 hex/base64 为编码后的指令，体积大于原始字节限制。
+
+## 1.2.0 本次验证（2026-11-10）
+
+本次六款升级在 Android 14 真机执行生产 Native 新增用例84项（扫码/标签30、文件/数据库36、图片/阅读18）及既有回归81项，合计165项通过、0失败。公开 UTS 消费者另有21项通过；包含6款新版示例的7页宿主已通过 HBuilderX 5.34 Android编译。计数属于整批测试，不是本插件功能数。
+
+本次未连接实际打印机，不表示标签已成功出纸；未扩大相机现场识码、系统文件选择器交互、其他系统版本或 iOS/Harmony 的验收范围。新接口与限制见本版本功能说明。

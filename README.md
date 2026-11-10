@@ -8,6 +8,21 @@ Nexus Wang 的 uni-app 插件公开文档集合与画廊。
 
 
 
+## 2026-11-10 · 六款功能更新
+
+[升级说明：盘点对账、批量标签与离线任务续租](articles/nexus-six-workflow-update.md)
+
+| 插件 | 已发布版本 | 新增能力 |
+| --- | --- | --- |
+| [Nexus 原生扫码](docs/aiko-scan-pro.md) | 1.3.0 | 新增盘点事件分页、摘要/事件CSV导出与公式文本转义。 |
+| [Nexus BLE 与打印指令](docs/aiko-ble-core.md) | 1.2.0 | 新增TSPL/ZPL模板变量与批量标签渲染，整批预检；不自动发送。 |
+| [Nexus 文件选择与附件工作流](docs/nexus-file-workflow.md) | 1.2.0 | 新增工作区文件分页列表与SHA256校验删除，保护附件历史版本。 |
+| [Nexus 本地数据库与离线队列](docs/nexus-sqlite-core.md) | 1.1.0 | 新增离线队列状态统计和持有者租约续期。 |
+| [Nexus 图片编辑](docs/aiko-image-edit.md) | 1.2.0 | 新增可配置文字水印，独立PNG输出与原图/结果SHA256。 |
+| [Nexus 文档阅读器](docs/aiko-doc-viewer.md) | 1.2.0 | 新增书签笔记关键词检索和Markdown摘要导出。 |
+
+Android真机：Native165/165、公开UTS21/21通过；6款示例与QA共7页编译通过。分层验证和未覆盖范围见升级说明。
+
 ## 接入实践
 
 - [uni-app x 接腾讯地图：Android 原生配置与导航事件怎么验收](articles/nexus-tencent-map-android-guide.md)

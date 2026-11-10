@@ -1,12 +1,43 @@
 # Nexus 图片编辑
 <!-- NEXUS:BRAND:START -->
-作者：**Nexus Wang**。演示页与封面使用统一 Nexus 视觉：米白背景、近黑功能卡、荧光黄绿点缀。
+作者：**Nexus Wang**。演示页与封面使用统一 Nexus 视觉：近黑背景、深蓝功能卡、电光蓝操作按钮与白色文字。
 
 插件 ID 与导入路径仍为 `aiko-image-edit`，既有 API 名称保持兼容。更新演示页时请保留实际权限、错误与能力诊断；不把未授权或未实现能力视为成功。
 <!-- NEXUS:BRAND:END -->
 
+## 1.2.0 · 文字水印（Android）
+
+新增 `addImageTextWatermark(options: ImageTextWatermarkOptions)`，用于现场凭证、品牌署名和内部流转标识。生成新的 PNG，原图不会被覆盖；不联网、不将结果自动保存到公共相册。
+
+| 参数 | 说明 |
+| --- | --- |
+| `imagePath` | 可读取的绝对路径、file URI 或已授权 content URI |
+| `text` | 1–200 个字符，单行且不可全空白 |
+| `position` | `top-left` / `top-right` / `bottom-left` / `bottom-right` / `center`，默认右下 |
+| `fontSize` | 字号像素，8–512，默认 24 |
+| `padding` | 距边缘的整数像素，0–2048，默认 16 |
+| `opacity` | 大于 0 且不大于 1，默认 0.75 |
+| `color` | `#RRGGBB`，默认 `#FFFFFF` |
+
+成功回调沿用 `{ code: 0, message, data }`；`data` 包含 `outputPath`、`width`、`height`、`bytes`、输出 `sha256`、原始输入 `sourceSha256` 以及水印 `bounds`（像素坐标）。输出在应用缓存目录，长期保存请由业务复制到持久目录。SHA256 用于内容比对，不代表数字签名或法律认证。
+
+```typescript
+import { addImageTextWatermark, ImageTextWatermarkOptions } from '@/uni_modules/aiko-image-edit'
+const options: ImageTextWatermarkOptions = {
+  imagePath: localImagePath,
+  text: 'Nexus Wang · 现场记录',
+  position: 'bottom-right', fontSize: 24, padding: 16,
+  opacity: 0.8, color: '#FFFFFF',
+  success: (res: UTSJSONObject): void => { console.log(res) },
+  fail: (err: UTSJSONObject): void => { console.log(err) }
+}
+addImageTextWatermark(options)
+```
+
+水印超出可用画面会明确失败，请减小字号/边距或缩短文字。输入上限 32 MiB、12 MP；使用解码后的像素坐标，不自动应用 EXIF 旋转，也不复制 EXIF 元数据。水印使用系统字体，不保证各机型字形完全一致；它不是防删除或防篡改保护。iOS/Harmony 新接口返回不支持（9029001）。完整交互见 `example/uniappx/workflow-demo.uvue`。
+
 <!-- NEXUS:WAVE10:VERIFICATION:START -->
-## 本轮验收记录（2026-11-06）
+## 历史验收记录（1.1.0，2026-11-06）
 
 本插件属于本轮2款新增、8款升级的交付。整批10项已在同一台Android14手机的统一Native复验APK中完成：数据38条、工业扫码/标签28条、文档图像15条、媒体26条，合计107条全部通过，0失败、0跳过；公开UTS新增链路另有30条真实回归通过。**这些是整批不同层次的检查数，不是本插件107个功能，也不能相加称为137个独立功能。** 本插件只对应其中相关检查，测试不替代全功能、全机型或长期稳定性验收。
 
@@ -20,13 +51,11 @@
 <!-- AIKO:RELEASE-NOTES:START -->
 ## 当前版本与授权价格
 
-当前版本：**1.1.0** · 本轮分类：**复杂类** · 更新时间：2026-11-06。
+当前版本：**1.2.0** · 本轮分类：**复杂类** · 更新时间：2026-11-10。
 
 裁剪、旋转、滤镜、涂鸦和图片输出，超大图按解码内存预算降采样。
 
-<!-- AIKO:PRICE-WINDOW:START -->
-**价格状态：目标定价尚未全部生效。** 当前市场普通授权价为 ¥29.90、源码授权价为 ¥699.00；目标为 ¥29.90 / ¥299.00。市场返回 24 小时调价限制，未生效部分以后续购买按钮显示为准。
-<!-- AIKO:PRICE-WINDOW:END -->
+普通授权与源码授权价格以插件市场购买页实时显示为准。
 
 | 授权类型 | 价格 |
 | --- | ---: |
@@ -195,7 +224,7 @@ Android `config.json` 引入 Apache 2.0 协议的 [uCrop](https://github.com/Yal
 
 ---
 
-欢迎反馈问题或深度定制，微信：**yala999888**
+问题反馈与功能建议请通过插件市场作者主页联系。
 
 
 ## Android 1.1.0：隐私遮蔽与批量图像副本
@@ -232,3 +261,9 @@ redactImage(options)
 示例文件`example/uniappx/workflow-demo.uvue`，请将该路径注册到宿主pages.json后打开。演示使用真实插件API，不预填成功结果；旧演示保持可用。新增能力目前仅Android，iOS/Harmony/Web入口明确失败，不作为已支持平台宣传。独立Kotlin测试源覆盖实际像素、哈希、导出/持久状态及错误输入；本轮已完成宿主UTS编译、公开API与相关Native专项；覆盖范围见页首验收记录，不能将其扩大为所有交互/平台通过。
 
 内存边界：上述字节数/像素上限是输入准入限制，不代表宿主一定有足够可用堆；应结合宿主其他页面/插件占用选择更小输入。新工作流遇到可恢复的位图内存分配失败时，尝试释放已持有位图并在主线程返回明确失败（图片9029005，文档9020010），不会将其计成功；系统杀进程等进程级终止无法保证回调。未通过人为耗尽真实手机内存来验证此分支。
+
+## 1.2.0 本次验证（2026-11-10）
+
+本次六款升级在 Android 14 真机执行生产 Native 新增用例84项（扫码/标签30、文件/数据库36、图片/阅读18）及既有回归81项，合计165项通过、0失败。公开 UTS 消费者另有21项通过；包含6款新版示例的7页宿主已通过 HBuilderX 5.34 Android编译。计数属于整批测试，不是本插件功能数。
+
+本次未连接实际打印机，不表示标签已成功出纸；未扩大相机现场识码、系统文件选择器交互、其他系统版本或 iOS/Harmony 的验收范围。新接口与限制见本版本功能说明。

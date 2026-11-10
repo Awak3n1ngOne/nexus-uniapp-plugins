@@ -11,11 +11,50 @@
 <!-- NEXUS:WAVE10:VERIFICATION:END -->
 
 
-作者：**Nexus Wang** · 插件ID：`nexus-file-workflow` · 版本：1.1.0
+作者：**Nexus Wang** · 插件ID：`nexus-file-workflow` · 版本：1.2.0
 
 面向工业工单、盘点证据与文档交接：1.1新增真实Android系统文件选择器，单选/多选、MIME过滤及明确的URI读授权管理，衔接原有有界导入、SHA256与不可变附件版本链。只处理用户明确选择或宿主明确传入的文档，不扫描未选择的私人文件，不自动联网。
 
 **支持：Android uni-app x，最低API 23。** 本轮未提供iOS、Harmony、Web、小程序和普通uni-app适配。HBuilderX建议5.07及以上；构建与真机结果以交付验收报告为准。
+
+## 1.2 新增：工作区浏览与校验删除
+
+面向工单附件列表和清理导入副本，新增两项 Android API。沿用 `NexusFileOptions`、主线程回调和 `{code,message,data}` 返回格式；不触发系统选择、不访问公共存储、不删除用户原始 URI 文档。
+
+| API | request | data |
+| --- | --- | --- |
+| `listWorkspaceFiles` | `scope`，可选 `directory`（默认 `files`）、`recursive`（默认 true）、`pageSize`（默认 50，1–200 整数）、`afterPath` | `items:[{path,bytes,modifiedAt}]`、`count`、`total`、`hasMore`、`nextAfterPath`、`skippedEntries`、`snapshot:false` |
+| `deleteWorkspaceFile` | `scope`、`path`、**必填** `expectedSha256` | 已删除文件的 `path/bytes/sha256/deleted:true` |
+
+- 列表只允许 `files`、`exports` 及其合法子目录；路径升序，下一页原样传 `nextAfterPath`。`hasMore:false` 时游标为空。目录不存在返回空列表；同名文件不是目录时失败。
+- 一次最多遍历 10000 个目录项、深度最多 32，超限明确失败；可改查更小的子目录。隐藏文件、符号链接和无法作为合法工作区路径的项被跳过，计入 `skippedEntries`。不列内部注册表或不可变 `revisions`。
+- 页数与 `total` 是本次读取状态，**不是跨请求冻结快照**。分页期间发生新增/删除时，重新从第一页刷新才能获取完整最新集合。列表不计算 SHA256；需要删除前先 `inspectWorkspaceFile`。
+- 删除仅接受 `files/`、`exports/` 内普通文件，必须提供匹配的 64 位十六进制 SHA256，大小上限 100 MiB。哈希不符返回 `9122006`，保留文件；无效参数 `9122001`，不存在/目录 `9122003`，超扫描范围 `9122009`。
+- 删除只移除当前私有副本，既有附件版本仍可读取。不会递归删目录，不允许符号链接，即使其目标仍在工作区。插件调用内部串行；哈希检查不承诺阻止其他进程或宿主直接文件 I/O 的并发修改。
+
+```ts
+import * as Files from '@/uni_modules/nexus-file-workflow'
+import { NexusFileOptions } from '@/uni_modules/nexus-file-workflow'
+const listOptions: NexusFileOptions = {
+  request: { scope: 'account-A/order-0001', directory: 'files', pageSize: 20 },
+  success: (res: UTSJSONObject): void => { console.log(JSON.stringify(res.getJSON('data'))) }
+}
+Files.listWorkspaceFiles(listOptions)
+// 删除前明确选择业务文件，再以当前 inspect 返回指纹校验。
+const inspectOptions: NexusFileOptions = {
+  request: { scope: 'account-A/order-0001', path: 'files/temporary-copy.txt' },
+  success: (res: UTSJSONObject): void => {
+    const sha = res.getJSON('data')?.getString('sha256') ?? ''
+    const deleteOptions: NexusFileOptions = {
+      request: { scope: 'account-A/order-0001', path: 'files/temporary-copy.txt', expectedSha256: sha },
+      success: (deleted: UTSJSONObject): void => { console.log(JSON.stringify(deleted)) }
+    }
+    // 由业务在用户明确选择删除后执行，勿在列表加载时自动清理。
+    Files.deleteWorkspaceFile(deleteOptions)
+  }
+}
+// 用户点击删除时调用：Files.inspectWorkspaceFile(inspectOptions)
+```
 
 ## 1.1新增：系统文件选择
 
@@ -281,6 +320,7 @@ export type NexusFileOptions = {
 | 9122006 | SHA256不匹配 |
 | 9122007 | 附件版本冲突 |
 | 9122008 | 宿主Context不可用 |
+| 9122009 | 目录遍历超过 10000 项，请缩小目录 |
 
 ## 本轮发布收尾记录（2026-11-07）
 
@@ -295,3 +335,9 @@ export type NexusFileOptions = {
 使用Android平台文件、SQLite及[AtomicFile](https://developer.android.com/reference/android/util/AtomicFile)；无第三方运行时依赖。私有目录边界不等于内容加密；业务文件可能含敏感信息，宿主负责账号授权、系统备份和留存策略。插件本身不联网。
 
 普通授权¥29.90、源码授权¥299（延续既有已生效定价）；实际版本与购买价以市场按钮为准，免费试用为平台独立入口。
+
+## 1.2.0 本次验证（2026-11-10）
+
+本次六款升级在 Android 14 真机执行生产 Native 新增用例84项（扫码/标签30、文件/数据库36、图片/阅读18）及既有回归81项，合计165项通过、0失败。公开 UTS 消费者另有21项通过；包含6款新版示例的7页宿主已通过 HBuilderX 5.34 Android编译。计数属于整批测试，不是本插件功能数。
+
+本次未连接实际打印机，不表示标签已成功出纸；未扩大相机现场识码、系统文件选择器交互、其他系统版本或 iOS/Harmony 的验收范围。新接口与限制见本版本功能说明。

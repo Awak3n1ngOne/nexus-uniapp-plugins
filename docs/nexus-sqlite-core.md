@@ -1,7 +1,7 @@
 # Nexus 本地数据库与离线队列
 
 <!-- NEXUS:WAVE10:VERIFICATION:START -->
-## 本轮验收记录（2026-11-06）
+## 1.0.0历史验收记录（2026-11-06）
 
 本插件属于本轮2款新增、8款升级的交付。整批10项已在同一台Android14手机的统一Native复验APK中完成：数据38条、工业扫码/标签28条、文档图像15条、媒体26条，合计107条全部通过，0失败、0跳过；公开UTS新增链路另有30条真实回归通过。**这些是整批不同层次的检查数，不是本插件107个功能，也不能相加称为137个独立功能。** 本插件只对应其中相关检查，测试不替代全功能、全机型或长期稳定性验收。
 
@@ -11,11 +11,47 @@
 <!-- NEXUS:WAVE10:VERIFICATION:END -->
 
 
-作者：**Nexus Wang** · 插件ID：`nexus-sqlite-core` · 版本：1.0.0
+作者：**Nexus Wang** · 插件ID：`nexus-sqlite-core` · 版本：1.1.0
 
 让工业采集、盘点、工单在离线时先可靠落地。基于 Android 自带 SQLite，实现参数SQL、版本迁移、原子批处理和持久 Outbox。数据保留在宿主私有目录，不自动联网，不采集或上传业务内容。
 
 **支持：Android uni-app x，最低 API 23。** 本轮未提供 iOS、Harmony、Web、小程序和普通uni-app适配；不以其他插件的测试替代本插件验收。HBuilderX建议5.07及以上；具体构建与真机结果以交付验收报告为准。
+
+## 1.1 新增：队列统计与持有者续租
+
+沿用 `NexusSqliteOptions` 及现有数据库文件，不需要业务迁移。两项能力均在 Android 工作线程执行，不新增联网或后台保活。
+
+| API | request | data |
+| --- | --- | --- |
+| `getOutboxStats` | `databaseId`；可选 `topic`（非空时精确匹配，最多 128 字符） | `total/pending/leased/acked/readyPending/delayedPending/activeLeases/expiredLeases/claimable/totalAttempts/oldestOutstandingAt/checkedAt/topic` |
+| `renewEventLease` | `databaseId/eventId/leaseToken`；可选 `leaseMs`（默认 30000，1000–3600000 整数） | `eventId/leaseToken/leaseUntil/renewedAt` |
+
+统计采用同一次 SQL 聚合和一个 `checkedAt` 时间，不受 `getOutbox` 的行数截断影响：`pending = readyPending + delayedPending`，`leased = activeLeases + expiredLeases`，`claimable = readyPending + expiredLeases`。已确认事件计入 `acked`；`total = pending + leased + acked`。没有未确认记录时 `oldestOutstandingAt:null`；`totalAttempts` 为所有匹配事件累计领取次数，续租不增加次数。统计不会改变状态，也不返回 payload 或租约令牌。省略、null 或空字符串 topic 表示全队列。
+
+续租使用 `max(当前截止时间, 当前时间 + leaseMs)`，不会把较长租期缩短，也不会每点一次累计增加固定时长。必须仍是 `leased`、令牌匹配且尚未过期；否则 `9121005`。原令牌在有效续租后保持不变，可用于确认/重试。若事件已被其他发送者重新领取，旧令牌不能复活。业务应在当前租约到期**之前**续租，网络发送仍由宿主负责。
+
+```ts
+import * as Database from '@/uni_modules/nexus-sqlite-core'
+import { NexusSqliteOptions } from '@/uni_modules/nexus-sqlite-core'
+// databaseId、eventId、leaseToken 使用 open / claim 的真实返回值。
+function showQueue(databaseId: string): void {
+  const options: NexusSqliteOptions = {
+    request: { databaseId: databaseId, topic: 'order.saved' },
+    success: (res: UTSJSONObject): void => { console.log(JSON.stringify(res.getJSON('data'))) }
+  }
+  Database.getOutboxStats(options)
+}
+function extendLease(databaseId: string, eventId: string, leaseToken: string): void {
+  const options: NexusSqliteOptions = {
+    request: { databaseId: databaseId, eventId: eventId, leaseToken: leaseToken, leaseMs: 60000 },
+    success: (res: UTSJSONObject): void => { console.log(res.getJSON('data')?.getNumber('leaseUntil')) },
+    fail: (res: UTSJSONObject): void => { console.log(res.getString('message')) }
+  }
+  Database.renewEventLease(options)
+}
+```
+
+租约仍使用设备墙钟时间；调时会影响截止判断。统计是调用时观察，不是持续订阅，也不能替代服务器确认或业务幂等。
 
 ## 两个业务能力
 
@@ -136,3 +172,9 @@ export type NexusSqliteOptions = {
 - 目标普通授权¥29.90、源码授权¥299；是否已上架及实际购买价格以市场按钮为准，免费试用是平台独立入口。
 
 验收应覆盖真实Android SQLite落盘/关闭重开、迁移失败回滚、业务与Outbox原子回滚、租约冲突及账号scope隔离。仅编译成功不等于所有Android机型长期稳定性或服务端业务幂等已验收。
+
+## 1.1.0 本次验证（2026-11-10）
+
+本次六款升级在 Android 14 真机执行生产 Native 新增用例84项（扫码/标签30、文件/数据库36、图片/阅读18）及既有回归81项，合计165项通过、0失败。公开 UTS 消费者另有21项通过；包含6款新版示例的7页宿主已通过 HBuilderX 5.34 Android编译。计数属于整批测试，不是本插件功能数。
+
+本次未连接实际打印机，不表示标签已成功出纸；未扩大相机现场识码、系统文件选择器交互、其他系统版本或 iOS/Harmony 的验收范围。新接口与限制见本版本功能说明。

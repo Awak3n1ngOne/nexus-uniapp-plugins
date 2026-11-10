@@ -1,12 +1,45 @@
 # Nexus 文档阅读器
 <!-- NEXUS:BRAND:START -->
-作者：**Nexus Wang**。演示页与封面使用统一 Nexus 视觉：米白背景、近黑功能卡、荧光黄绿点缀。
+作者：**Nexus Wang**。演示页与封面使用统一 Nexus 视觉：近黑背景、深蓝功能卡、电光蓝操作按钮与白色文字。
 
 插件 ID 与导入路径仍为 `aiko-doc-viewer`，既有 API 名称保持兼容。更新演示页时请保留实际权限、错误与能力诊断；不把未授权或未实现能力视为成功。
 <!-- NEXUS:BRAND:END -->
 
+## 1.2.0 · 阅读笔记检索与 Markdown 摘要（Android）
+
+新增 `searchReadingBookmarks` 和 `exportReadingNotesMarkdown`，两者使用 `ReadingBookmarkQueryOptions`。检索对象是通过 `saveReadingState` 保存的**书签标题与笔记**，不会进行 PDF 全文搜索、OCR 或修改原文档。
+
+| 参数 | 说明 |
+| --- | --- |
+| `source` | 可读取的本地文件或已授权 content URI；按文件内容 SHA256 定位阅读记录 |
+| `keyword` | 0–200 字符，去除首尾空白；为空返回全部，否则按字面子串检索，不区分大小写 |
+| `pageFrom` / `pageTo` | 可选闭区间页码，默认全文页码范围 |
+| `offset` / `limit` | offset 0–1000；limit 1–100，默认 50 |
+| `expectedRevision` | 建议分页时传首个结果的 revision；保存发生变化时返回冲突，重新从首页检索 |
+| `title` | 仅 Markdown 使用；单行 1–200 字符，默认“阅读笔记” |
+
+结果沿用 `{ code: 0, message, data }`；`data.items` 为本页书签，另含 `total`、`revision`、`hasMore`、`nextOffset`（最后一页为 null）、`documentSha256`。按页码、书签 ID 排序，搜索与导出均不改变阅读状态。超出结果尾部返回空数组，不自动回到第一页。
+
+```typescript
+import { searchReadingBookmarks, exportReadingNotesMarkdown, ReadingBookmarkQueryOptions } from '@/uni_modules/aiko-doc-viewer'
+const options: ReadingBookmarkQueryOptions = {
+  source: localDocumentPath, keyword: '复核', offset: 0, limit: 20,
+  success: (res: UTSJSONObject): void => { console.log(res) },
+  fail: (err: UTSJSONObject): void => { console.log(err) }
+}
+searchReadingBookmarks(options)
+const exportOptions: ReadingBookmarkQueryOptions = {
+  source: localDocumentPath, keyword: '复核', title: '交接阅读笔记', limit: 100,
+  success: (res: UTSJSONObject): void => { console.log(res) },
+  fail: (err: UTSJSONObject): void => { console.log(err) }
+}
+exportReadingNotesMarkdown(exportOptions)
+```
+
+Markdown 返回 `data.markdown` 文本、`format: 'text/markdown'` 和 UTF-8 `bytes`，还包含相同的分页信息。标题、链接、HTML 与 Markdown 特殊字符按字面转义；笔记换行保留为引用段落。每次最多导出 100 条和 2 MB；根据 `hasMore` 分页，不会假装已导出全部。结果不包含设备文件路径，不自动上传、分享或写入文件。输入文档最大 100 MiB；无记录时返回空书签，检索中文子串，无分词/模糊匹配。iOS 新接口返回不支持（9021001）。交互见 `example/uniappx/workflow-demo.uvue`。
+
 <!-- NEXUS:WAVE10:VERIFICATION:START -->
-## 本轮验收记录（2026-11-06）
+## 历史验收记录（1.1.0，2026-11-06）
 
 本插件属于本轮2款新增、8款升级的交付。整批10项已在同一台Android14手机的统一Native复验APK中完成：数据38条、工业扫码/标签28条、文档图像15条、媒体26条，合计107条全部通过，0失败、0跳过；公开UTS新增链路另有30条真实回归通过。**这些是整批不同层次的检查数，不是本插件107个功能，也不能相加称为137个独立功能。** 本插件只对应其中相关检查，测试不替代全功能、全机型或长期稳定性验收。
 
@@ -20,13 +53,11 @@
 <!-- AIKO:RELEASE-NOTES:START -->
 ## 当前版本与授权价格
 
-当前版本：**1.1.0** · 本轮分类：**复杂类** · 更新时间：2026-11-06。
+当前版本：**1.2.0** · 本轮分类：**复杂类** · 更新时间：2026-11-10。
 
 PDF 渲染/搜索/目录、轻量 Office 和 Markdown 预览、文档选择。
 
-<!-- AIKO:PRICE-WINDOW:START -->
-**价格状态：目标定价尚未全部生效。** 当前市场普通授权价为 ¥39.99、源码授权价为 ¥699.99；目标为 ¥29.90 / ¥299.00。市场返回 24 小时调价限制，未生效部分以后续购买按钮显示为准。
-<!-- AIKO:PRICE-WINDOW:END -->
+普通授权与源码授权价格以插件市场购买页实时显示为准。
 
 | 授权类型 | 价格 |
 | --- | ---: |
@@ -232,7 +263,7 @@ A：支持 md/txt，内置 convertMarkdownToHtml 与 getDocumentOutline 提取�
 
 ---
 
-欢迎反馈问题或深度定制，微信：**yala999888**
+问题反馈与功能建议请通过插件市场作者主页联系。
 
 ## Android 嵌入式原生预览组件
 
@@ -324,3 +355,9 @@ saveReadingState(options)
 ### 新增示例与验证范围
 
 示例文件`example/uniappx/workflow-demo.uvue`，请将该路径注册到宿主pages.json后打开。演示使用真实插件API，不预填成功结果；旧演示保持可用。新增能力目前仅Android，iOS/Harmony/Web入口明确失败，不作为已支持平台宣传。独立Kotlin测试源覆盖实际像素、哈希、导出/持久状态及错误输入；本轮已完成宿主UTS编译、公开API与相关Native专项；覆盖范围见页首验收记录，不能将其扩大为所有交互/平台通过。
+
+## 1.2.0 本次验证（2026-11-10）
+
+本次六款升级在 Android 14 真机执行生产 Native 新增用例84项（扫码/标签30、文件/数据库36、图片/阅读18）及既有回归81项，合计165项通过、0失败。公开 UTS 消费者另有21项通过；包含6款新版示例的7页宿主已通过 HBuilderX 5.34 Android编译。计数属于整批测试，不是本插件功能数。
+
+本次未连接实际打印机，不表示标签已成功出纸；未扩大相机现场识码、系统文件选择器交互、其他系统版本或 iOS/Harmony 的验收范围。新接口与限制见本版本功能说明。
